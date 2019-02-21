@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	
+	<!-- 1. spring Scheduler 를 사용한 Scheduler 설정  -->
+	<!-- <context:component-scan base-package="com.hiair.app.schedule" />   
+    <task:scheduler id="jobScheduler" pool-size="10" />
+    <task:annotation-driven scheduler="jobScheduler" />  -->
+	
+	<!-- 2. quartz 를 사용한 Scheduler 설정 -->
+ 	<!-- quartz jdbc Jobstore 이용.. -->
+	<!-- <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+   		   <property name="configLocation" value="classpath:config/properties/config-quartz.properties" />
+   		   <property name="waitForJobsToCompleteOnShutdown" value="true" /> -->
+   		   <!-- <property name="applicationContextSchedulerContextKey" value="applicationContext" /> -->
+<!--     </bean> -->
+
+</beans>

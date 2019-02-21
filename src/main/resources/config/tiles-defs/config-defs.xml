@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?> <!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions> <!-- base-definition -->
+	<definition name="dash-main" template="/WEB-INF/views/tiles/layout/mainLayout.jsp">
+		<put-attribute name="header" value="/WEB-INF/views/tiles/template/mainHeader.jsp" />
+		<put-attribute name="menu" value="/WEB-INF/views/tiles/template/mainMenu.jsp" />
+		<put-attribute name="body" value="" />
+		<put-attribute name="footer" value="/WEB-INF/views/tiles/template/mainFooter.jsp" />
+	</definition>
+	
+	<definition name="*.dash" extends="dash-main">
+		<put-attribute name="body" value="/WEB-INF/views/{1}.jsp"/>
+	</definition>
+	<definition name="*/*.dash" extends="dash-main">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}.jsp"/>
+	</definition>
+	<definition name="*/*/*.dash" extends="dash-main">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}.jsp"/>
+	</definition>
+	<definition name="*/*/*/*.dash" extends="dash-main">
+		<put-attribute name="body" value="/WEB-INF/views{1}/{2}/{3}/{4}.jsp"/>
+	</definition>
+	<definition name="*/*/*/*/*.dash" extends="dash-main">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}/{4}/{5}.jsp"/>
+	</definition>
+	
+	
+	<definition name="default" template="/WEB-INF/views/tiles/layout/defaultLayout.jsp">
+		<put-attribute name="body" value="" />
+	</definition>
+	
+	<definition name="*.df" extends="default">
+		<put-attribute name="body" value="/WEB-INF/views/{1}.jsp"/>
+	</definition>
+	<definition name="*/*.df" extends="default">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}.jsp"/>
+	</definition>
+	<definition name="*/*/*.df" extends="default">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}.jsp"/>
+	</definition>
+	<definition name="*/*/*/*.df" extends="default">
+		<put-attribute name="body" value="/WEB-INF/views{1}/{2}/{3}/{4}.jsp"/>
+	</definition>
+	<definition name="*/*/*/*/*.df" extends="default">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}/{4}/{5}.jsp"/>
+	</definition>
+	
+</tiles-definitions>

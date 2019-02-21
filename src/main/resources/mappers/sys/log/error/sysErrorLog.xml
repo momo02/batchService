@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hiair.sys.log.error.mapper.SysErrorLogMapper">
+	
+	<resultMap type="com.hiair.sys.log.error.vo.SysErrorLogVO" id="SysErrorLogMap">
+		<result property="errorLogNo" column="ERROR_LOG_NO" />
+		<result property="systemCode" column="SYSTEM_CODE"/>
+		<result property="occurYmd" column="OCCUR_YMD"/>
+		<result property="occurHms" column="OCCUR_HMS"/>
+		<result property="processServerIp" column="PROCESS_SERVER_IP"/>
+		<result property="javaName" column="JAVA_NAME"/>
+		<result property="methodName" column="METHOD_NAME"/>
+		<result property="userId" column="USER_ID"/>
+		<result property="processUrl" column="PROCESS_URL"/>
+		<result property="errorSimpleContent" column="ERROR_SIMPLE_CONTENT"/>
+		<result property="errorDetailContent" column="ERROR_DETAIL_CONTENT"/>
+		<result property="requestContent" column="REQUEST_CONTENT"/>
+	</resultMap>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="errorLogNo">
+		INSERT INTO LOG_ERROR 
+            ( SYSTEM_CODE 
+             ,OCCUR_YMD
+             ,OCCUR_HMS 
+             ,PROCESS_SERVER_IP 
+             ,JAVA_NAME 
+             ,METHOD_NAME 
+             ,USER_ID 
+             ,PROCESS_URL 
+             ,ERROR_SIMPLE_CONTENT 
+             ,ERROR_DETAIL_CONTENT 
+             ,REQUEST_CONTENT
+            ) 
+		VALUES     
+			( #{systemCode} 
+             ,DATE_FORMAT(CURRENT_TIMESTAMP,'%Y%m%d')  
+             ,DATE_FORMAT(CURRENT_TIMESTAMP,'%H%i%s') 
+             ,#{processServerIp}  
+             ,#{javaName}  
+             ,#{methodName}  
+             ,#{userId}  
+             ,#{processUrl}  
+             ,#{errorSimpleContent}  
+             ,#{errorDetailContent}  
+             ,#{requestContent}  
+           ); 
+	</insert>
+
+</mapper>

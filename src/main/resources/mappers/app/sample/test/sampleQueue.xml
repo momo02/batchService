@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hiair.app.sample.test.service.SampleQueueMapper">
+	
+	<select id="select" resultType="sampleQueue">
+		<![CDATA[
+		SELECT   SEQ  		AS seq
+				,REG_DATE 	AS regDate
+				,PRCS_DATE 	AS prcsDate
+				,PRCS_CD	AS prcsCd
+				,DETAIL		AS detail
+				,CAST(RTRY_CNT AS UNSIGNED) AS rtryCnt
+		FROM SAMPLE_QUEUE
+		WHERE 1 = 1
+		AND (PRCS_CD = 'FAIL' OR PRCS_CD IS NULL) 
+		LIMIT #{_skiprows}, #{_pagesize}
+		]]>
+<!-- 				WHERE (PRCS_CD = 'FAIL' OR PRCS_CD IS NULL) AND RTRY_CNT < 10 -->
+	</select>
+	
+	<update id="update" parameterType="sampleQueue">
+		<![CDATA[
+		UPDATE SAMPLE_QUEUE
+		SET PRCS_DATE = NOW(), 
+			PRCS_CD = #{prcsCd}, 
+			DETAIL = #{detail}, 
+			RTRY_CNT = #{rtryCnt}
+		WHERE SEQ = #{seq}
+		]]>
+	</update>
+	
+	<!-- TEST !!!! -->
+	<select id="update1" resultType="sampleQueue">
+		<![CDATA[
+		UPDATE SAMPLE_QUEUE 
+		SET RTRY_CNT = 1
+		WHERE SEQ <= 100 
+		]]>
+	</select>
+	
+	<select id="update2" resultType="sampleQueue">
+		<![CDATA[
+		UPDATE SAMPLE_QUEUE 
+		SET RTRY_CNT = 2
+		WHERE SEQ > 100 
+		]]>
+	</select>
+	
+</mapper>

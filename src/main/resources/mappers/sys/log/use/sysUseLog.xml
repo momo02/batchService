@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hiair.sys.log.use.mapper.SysUseLogMapper">
+	<insert id="insertLog">
+		INSERT INTO LOG(
+			URI,
+			USER_ID,
+			USER_NAME,
+			INSERT_DATE
+		)
+		VALUES(
+			#{uri},
+			#{userId},
+			#{userName},
+			NOW()
+		)
+	</insert>
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hiair.app.cmm.file.mapper.CmmFileMapper">
+	<resultMap type="com.hiair.app.cmm.file.vo.CmmFileVO" id="cmmFileMap">
+		<result property="fileId" column="FILE_ID" />
+		<result property="fileGroupId" column="FILE_GROUP_ID"/>
+		<result property="originalFileName" column="ORIGINAL_FILE_NAME"/>
+		<result property="storageFileName" column="STORAGE_FILE_NAME"/>
+		<result property="fileExt" column="FILE_EXT"/>
+		<result property="filePath" column="FILE_PATH"/>
+		<result property="fileSize" column="FILE_SIZE"/>
+		<result property="fileType" column="FILE_TYPE"/>
+		<result property="insertDate" column="INSERT_DATE"/>
+	</resultMap>
+	<insert id="insert" useGeneratedKeys="true" keyProperty="fileId">
+		INSERT INTO FILE(
+			FILE_GROUP_ID, 
+			ORIGINAL_FILE_NAME, 
+			STORAGE_FILE_NAME, 
+			FILE_EXT, 
+			FILE_PATH, 
+			FILE_SIZE, 
+			FILE_TYPE,
+			INSERT_DATE
+		)VALUES(
+			#{fileGroupId}, 
+			#{originalFileName}, 
+			#{storageFileName}, 
+			#{fileExt}, 
+			#{filePath}, 
+			#{fileSize}, 
+			#{fileType},
+			NOW()
+		)
+	</insert>
+	<select id="selectByFileId" resultMap="cmmFileMap">
+		SELECT * FROM FILE
+		WHERE FILE_ID = #{fileId}
+		ORDER BY FILE_ID
+		LIMIT 1
+	</select>
+	<delete id="deleteByFileId">
+		DELETE FROM FILE
+		WHERE FILE_ID = #{fileId}
+	</delete>
+</mapper>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<bean id="dataSource" 
+		  class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+		  p:driverClassName="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+       	  p:url="jdbc:log4jdbc:mysql://13.125.97.21:3306/IBE_HIAIR?characterEncoding=UTF-8&amp;autoReconnect=true&amp;useSSL=false"
+          p:username="hiair"
+          p:password="hiair!8282" >
+	</bean>
+
+</beans>

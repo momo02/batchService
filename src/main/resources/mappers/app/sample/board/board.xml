@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hiair.app.sample.board.service.BoardMapper">
+	<resultMap type="com.hiair.app.sample.board.vo.BoardVO" id="boardMap">
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="boardTitle" column="BOARD_TITLE"/>
+		<result property="boardContent" column="BOARD_CONTENT"/>
+		<result property="fileGroupId" column="FILE_GROUP_ID"/>
+		<result property="imgFileGroupId" column="IMG_FILE_GROUP_ID"/>
+		<result property="insertDate" column="INSERT_DATE"/>
+		<result property="updateDate" column="UPDATE_DATE"/>
+		<result property="insertUserId" column="INSERT_USER_ID"/>
+		<result property="insertUserName" column="INSERT_USER_NAME"/>
+		<result property="boardType" column="BOARD_TYPE"/>
+	</resultMap>
+	<resultMap type="com.hiair.app.sample.board.vo.Board2VO" id="boardMap2">
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="boardTitle" column="BOARD_TITLE"/>
+		<result property="boardContent" column="BOARD_CONTENT"/>
+		<result property="fileGroupId" column="FILE_GROUP_ID"/>
+		<result property="imgFileGroupId" column="IMG_FILE_GROUP_ID"/>
+		<result property="insertDate" column="INSERT_DATE"/>
+		<result property="updateDate" column="UPDATE_DATE"/>
+		<result property="insertUserId" column="INSERT_USER_ID"/>
+		<result property="insertUserName" column="INSERT_USER_NAME"/>
+		<result property="boardType" column="BOARD_TYPE"/>
+	</resultMap>
+	<select id="select" resultMap="boardMap">
+		<![CDATA[
+		SELECT * FROM BOARD
+		]]>
+		<where>
+			<if test="boardId != null and boardId != 0 and boardId != ''">
+				BOARD_ID = #{boardId}		
+			</if>
+		</where>
+		ORDER BY BOARD_ID DESC, INSERT_DATE DESC
+	</select>
+	<insert id="insert">
+		<![CDATA[
+		INSERT INTO BOARD(
+			BOARD_TITLE, 
+			BOARD_CONTENT, 
+			INSERT_DATE, 
+			UPDATE_DATE, 
+			INSERT_USER_ID, 
+			INSERT_USER_NAME, 
+			BOARD_TYPE
+		)
+		VALUES(
+			#{boardTitle},
+			#{boardContent},
+			NOW(),
+			NOW(),
+			#{insertUserId},
+			#{insertUserName},
+			99
+		)		
+		]]>
+	</insert>
+	<update id="update">
+		<![CDATA[
+		UPDATE BOARD
+		SET BOARD_TITLE=#{boardTitle}, 
+			BOARD_CONTENT=#{boardContent}, 
+			UPDATE_DATE=NOW()
+		WHERE BOARD_ID=#{boardId}
+		]]>
+	</update>
+	<delete id="delete">
+		<![CDATA[
+		DELETE FROM BOARD
+		WHERE BOARD_ID = #{boardId}
+		]]>
+	</delete>
+	
+	<!-- board2vo -->
+	<select id="select2" resultMap="boardMap2">
+		SELECT BOARD_ID,
+		       BOARD_TITLE,
+		       BOARD_CONTENT,
+		       FILE_GROUP_ID,
+		       IMG_FILE_GROUP_ID,
+		       DATE_FORMAT(INSERT_DATE, '%Y-%m-%d') AS INSERT_DATE,
+		       INSERT_USER_ID,
+		       INSERT_USER_NAME,
+		       DATE_FORMAT(UPDATE_DATE, '%Y-%m-%d') AS UPDATE_DATE,
+		       BOARD_TYPE
+		FROM   BOARD
+		<where>
+			<if test="boardId != null and boardId != 0 and boardId != ''">
+		<![CDATA[
+				BOARD_ID = #{boardId}		
+		]]>
+			</if>
+		</where>
+		ORDER  BY INSERT_DATE DESC, BOARD_ID DESC
+	</select>
+	<insert id="insert2">
+		<![CDATA[
+		INSERT INTO BOARD(
+			BOARD_TITLE, 
+			BOARD_CONTENT, 
+			INSERT_DATE, 
+			UPDATE_DATE, 
+			INSERT_USER_ID, 
+			INSERT_USER_NAME, 
+			BOARD_TYPE
+		)
+		VALUES(
+			#{boardTitle},
+			#{boardContent},
+			NOW(),
+			NOW(),
+			#{insertUserId},
+			#{insertUserName},
+			99
+		)		
+		]]>
+	</insert>
+	<update id="update2">
+		<![CDATA[
+		UPDATE BOARD
+		SET BOARD_TITLE=#{boardTitle}, 
+			BOARD_CONTENT=#{boardContent}, 
+			UPDATE_DATE=NOW()
+		WHERE BOARD_ID=#{boardId}
+		]]>
+	</update>
+	<delete id="delete2">
+		<![CDATA[
+		DELETE FROM BOARD
+		WHERE BOARD_ID = #{boardId}
+		]]>
+	</delete>
+</mapper>

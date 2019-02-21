@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+	<!-- Session Factory 설정 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!-- ibatis와 다르게 sql디렉토리에 xml 추가만 해주면 별도추가없이 알아서 xml내의 쿼리 인식 -->
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:mappers/*.xml</value>
+				<value>classpath:mappers/**/*.xml</value>
+				<value>classpath:mappers/**/**/*.xml</value>
+			</list>
+		</property>
+		<property name="typeAliasesPackage" value="com.hiair"/>
+	</bean>
+	
+	<!-- Session 설정 -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionFactory" />
+	</bean>
+	
+	<!-- [MyBatis의 Mapper Interface 자동스캔 설정] -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+      <!-- <property name="basePackage" value="com.jung.boardWeb.*.service" /> -->
+		<property name="basePackage" value="com.hiair" /> <!-- Mapper을 찾는 기본 Package -->
+		<property name="annotationClass" value="com.hiair.sys.annotation.Mapper" /><!-- Mapper을 지정하는 어노테이션 클래스 -->
+	</bean>
+	
+</beans>

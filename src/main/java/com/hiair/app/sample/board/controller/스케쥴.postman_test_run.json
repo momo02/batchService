@@ -1,0 +1,802 @@
+{
+	"id": "04e213eb-d4b1-4138-9e59-c9478346d5ec",
+	"name": "스케쥴",
+	"allTests": [],
+	"timestamp": "2019-02-15T08:11:28.601Z",
+	"collection_id": "4a69b3d9-4ef3-fca4-1d91-ba301b159f87",
+	"folder_id": 0,
+	"target_type": "collection",
+	"environment_id": "0",
+	"data": [],
+	"delay": 0,
+	"count": 1,
+	"collection": {
+		"id": "4a69b3d9-4ef3-fca4-1d91-ba301b159f87",
+		"name": "스케쥴",
+		"description": "",
+		"auth": null,
+		"events": null,
+		"variables": null,
+		"order": [
+			"8f50ef45-75c4-14b3-34b7-4ffe74bc327b",
+			"6b0ce5b0-62c8-9e74-d831-06787cf00b7c",
+			"d64ec0ee-66e4-44f4-68f5-56a9f263ecc4",
+			"20aa8555-c503-4b89-a7d9-73ce160a8577",
+			"72a592c8-9c7b-e946-c218-50aeee542208",
+			"e059ddcb-07b0-141f-7bc5-096feb07d3f6",
+			"b059c6f2-f581-49e2-92f4-ab59d166cf21",
+			"a3f8bd1e-2f08-1b06-390d-dfb69b57b48a",
+			"88e81bfc-3d14-53b9-0ed7-7a3ebb67798a",
+			"f5c332c9-6d88-8141-c069-9f7c1c7805cb",
+			"0732554b-d6aa-6f9b-dc39-0fec13b0f6e4",
+			"a617a592-8c70-86d9-f067-d043f80fea19",
+			"8aee7125-156d-7e63-ad9f-730f2bfe8579",
+			"9aee49d5-3461-9a41-23af-cbec2234668c",
+			"a97c7b20-922c-23ae-a1cc-f8b21e5b6435",
+			"51b0e87b-d13b-f93f-31fa-3f4e2e065a7d",
+			"7315fade-9c44-4d51-afe2-e758f4a0b752",
+			"86a18ea2-afde-4052-a2fe-aaf858c7cb62",
+			"148b6aa6-05e4-440f-8e83-fc7bc3170e6b"
+		],
+		"folders_order": [],
+		"owner": "2684068",
+		"permissions": {},
+		"favorite": true,
+		"shared": false,
+		"type": "collection",
+		"depth": 0
+	},
+	"folder": null,
+	"environment": null,
+	"globals": [],
+	"results": [
+		{
+			"name": "start - 스케쥴 실행 시작",
+			"id": "8f50ef45-75c4-14b3-34b7-4ffe74bc327b",
+			"url": "localhost:8282/schedule/start.do",
+			"totalTime": 0,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {},
+			"times": [
+				"65"
+			],
+			"allTests": [
+				{}
+			],
+			"time": "65",
+			"totalRequestTime": "65",
+			"iterationResults": {}
+		},
+		{
+			"name": "stop - 스케쥴 실행 중지",
+			"id": "6b0ce5b0-62c8-9e74-d831-06787cf00b7c",
+			"url": "localhost:8282/schedule/stop.do",
+			"totalTime": 0,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {},
+			"times": [
+				"40"
+			],
+			"allTests": [
+				{}
+			],
+			"time": "40",
+			"totalRequestTime": "40",
+			"iterationResults": {}
+		},
+		{
+			"name": "register - 스케쥴 등록",
+			"id": "d64ec0ee-66e4-44f4-68f5-56a9f263ecc4",
+			"url": "localhost:8282/schedule/scheduleJob.do",
+			"totalTime": 0,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {},
+			"times": [
+				"39"
+			],
+			"allTests": [
+				{}
+			],
+			"time": "39",
+			"totalRequestTime": "39",
+			"iterationResults": {}
+		},
+		{
+			"name": "register - 스케쥴 등록 (기존 Job에 trigger add)",
+			"id": "20aa8555-c503-4b89-a7d9-73ce160a8577",
+			"url": "localhost:8282/rest/schedule/scheduleJob",
+			"totalTime": 0,
+			"responseCode": {
+				"code": 200,
+				"name": "OK",
+				"detail": {
+					"name": "OK",
+					"detail": "Standard response for successful HTTP requests. The actual response will depend on the request method used. In a GET request, the response will contain an entity corresponding to the requested resource. In a POST request the response will contain an entity describing or containing the result of the action."
+				}
+			},
+			"testPassFailCounts": {},
+			"times": [
+				"118"
+			],
+			"allTests": [
+				{}
+			],
+			"time": "118",
+			"totalRequestTime": "118",
+			"iterationResults": {}
+		},
+		{
+			"name": "register - 스케쥴 등록(2)",
+			"id": "72a592c8-9c7b-e946-c218-50aeee542208",
+			"url": "localhost:8282/schedule/scheduleJob.do",
+			"totalTime": 0,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {},
+			"times": [
+				"36"
+			],
+			"allTests": [
+				{}
+			],
+			"time": "36",
+			"totalRequestTime": "36",
+			"iterationResults": {}
+		},
+		{
+			"name": "rescheduleJob - 스케쥴 변경",
+			"id": "e059ddcb-07b0-141f-7bc5-096feb07d3f6",
+			"url": "localhost:8282/schedule/rescheduleJob.do",
+			"totalTime": 0,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {},
+			"times": [
+				"40"
+			],
+			"allTests": [
+				{}
+			],
+			"time": "40",
+			"totalRequestTime": "40",
+			"iterationResults": {}
+		},
+		{
+			"name": "addExcludeDate - 스케줄 예외 일자 추가",
+			"id": "b059c6f2-f581-49e2-92f4-ab59d166cf21",
+			"url": "localhost:8282/schedule/addExcludedDate.do",
+			"totalTime": 0,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {},
+			"times": [
+				"36"
+			],
+			"allTests": [
+				{}
+			],
+			"time": "36",
+			"totalRequestTime": "36",
+			"iterationResults": {}
+		},
+		{
+			"name": "deleteJob - 특정 Job 삭제",
+			"id": "a3f8bd1e-2f08-1b06-390d-dfb69b57b48a",
+			"url": "localhost:8282/schedule/deleteJob.do",
+			"totalTime": 0,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {},
+			"times": [
+				"38"
+			],
+			"allTests": [
+				{}
+			],
+			"time": "38",
+			"totalRequestTime": "38",
+			"iterationResults": {}
+		},
+		{
+			"name": "deleteJobAll - 모든 Job 삭제",
+			"id": "88e81bfc-3d14-53b9-0ed7-7a3ebb67798a",
+			"url": "localhost:8282/schedule/deleteJobAll.do",
+			"totalTime": 0,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {},
+			"times": [
+				"77"
+			],
+			"allTests": [
+				{}
+			],
+			"time": "77",
+			"totalRequestTime": "77",
+			"iterationResults": {}
+		},
+		{
+			"name": "pauseJob - 특정 Job 중지",
+			"id": "f5c332c9-6d88-8141-c069-9f7c1c7805cb",
+			"url": "localhost:8282/schedule/pauseJob.do",
+			"totalTime": 0,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {},
+			"times": [
+				"36"
+			],
+			"allTests": [
+				{}
+			],
+			"time": "36",
+			"totalRequestTime": "36",
+			"iterationResults": {}
+		},
+		{
+			"name": "pauseTrigger - 특정 Trigger 중지",
+			"id": "0732554b-d6aa-6f9b-dc39-0fec13b0f6e4",
+			"url": "localhost:8282/schedule/pauseTrigger.do",
+			"totalTime": 0,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {},
+			"times": [
+				"38"
+			],
+			"allTests": [
+				{}
+			],
+			"time": "38",
+			"totalRequestTime": "38",
+			"iterationResults": {}
+		},
+		{
+			"name": "pauseAll - 모든 Trigger 중지",
+			"id": "a617a592-8c70-86d9-f067-d043f80fea19",
+			"url": "localhost:8282/schedule/pauseAll.do",
+			"totalTime": 0,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {},
+			"times": [
+				"36"
+			],
+			"allTests": [
+				{}
+			],
+			"time": "36",
+			"totalRequestTime": "36",
+			"iterationResults": {}
+		},
+		{
+			"name": "resumeJob - 특정 Job 재시작",
+			"id": "8aee7125-156d-7e63-ad9f-730f2bfe8579",
+			"url": "localhost:8282/schedule/resumeJob.do",
+			"totalTime": 0,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {},
+			"times": [
+				"39"
+			],
+			"allTests": [
+				{}
+			],
+			"time": "39",
+			"totalRequestTime": "39",
+			"iterationResults": {}
+		},
+		{
+			"name": "resumeTrigger - 특정 Trigger 재시작",
+			"id": "9aee49d5-3461-9a41-23af-cbec2234668c",
+			"url": "localhost:8282/schedule/resumeTrigger.do",
+			"totalTime": 0,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {},
+			"times": [
+				"39"
+			],
+			"allTests": [
+				{}
+			],
+			"time": "39",
+			"totalRequestTime": "39",
+			"iterationResults": {}
+		},
+		{
+			"name": "resumeAll - 모든 Trigger 재시작",
+			"id": "a97c7b20-922c-23ae-a1cc-f8b21e5b6435",
+			"url": "localhost:8282/schedule/resumeAll.do",
+			"totalTime": 0,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {},
+			"times": [
+				"37"
+			],
+			"allTests": [
+				{}
+			],
+			"time": "37",
+			"totalRequestTime": "37",
+			"iterationResults": {}
+		},
+		{
+			"name": "selectScheduleAll - 모든 스케쥴 조회",
+			"id": "51b0e87b-d13b-f93f-31fa-3f4e2e065a7d",
+			"url": "localhost:8282/schedule/selectScheduleAll.do",
+			"totalTime": 0,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {},
+			"times": [
+				"39"
+			],
+			"allTests": [
+				{}
+			],
+			"time": "39",
+			"totalRequestTime": "39",
+			"iterationResults": {}
+		},
+		{
+			"name": "getJobList",
+			"id": "7315fade-9c44-4d51-afe2-e758f4a0b752",
+			"url": "localhost:8282/rest/schedule/getJobList",
+			"totalTime": 0,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {},
+			"times": [
+				"75"
+			],
+			"allTests": [
+				{}
+			],
+			"time": "75",
+			"totalRequestTime": "75",
+			"iterationResults": {}
+		},
+		{
+			"name": "getTriggerList",
+			"id": "86a18ea2-afde-4052-a2fe-aaf858c7cb62",
+			"url": "localhost:8282/rest/schedule/getJobList",
+			"totalTime": 0,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {},
+			"times": [
+				"66"
+			],
+			"allTests": [
+				{}
+			],
+			"time": "66",
+			"totalRequestTime": "66",
+			"iterationResults": {}
+		},
+		{
+			"name": "addTrigger",
+			"id": "148b6aa6-05e4-440f-8e83-fc7bc3170e6b",
+			"url": "localhost:8282/rest/schedule/getJobList",
+			"totalTime": 0,
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {},
+			"times": [
+				"68"
+			],
+			"allTests": [
+				{}
+			],
+			"time": "68",
+			"totalRequestTime": "68",
+			"iterationResults": {}
+		}
+	],
+	"totalPass": 0,
+	"totalFail": 0,
+	"totalTime": 962,
+	"lifecycle": "done",
+	"requests": [
+		{
+			"name": "start - 스케쥴 실행 시작",
+			"id": "8f50ef45-75c4-14b3-34b7-4ffe74bc327b",
+			"url": "localhost:8282/schedule/start.do",
+			"time": "2019-02-15T08:11:28.601Z",
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {}
+		},
+		{
+			"name": "stop - 스케쥴 실행 중지",
+			"id": "6b0ce5b0-62c8-9e74-d831-06787cf00b7c",
+			"url": "localhost:8282/schedule/stop.do",
+			"time": "2019-02-15T08:11:28.601Z",
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {}
+		},
+		{
+			"name": "register - 스케쥴 등록",
+			"id": "d64ec0ee-66e4-44f4-68f5-56a9f263ecc4",
+			"url": "localhost:8282/schedule/scheduleJob.do",
+			"time": "2019-02-15T08:11:28.601Z",
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {}
+		},
+		{
+			"name": "register - 스케쥴 등록 (기존 Job에 trigger add)",
+			"id": "20aa8555-c503-4b89-a7d9-73ce160a8577",
+			"url": "localhost:8282/rest/schedule/scheduleJob",
+			"time": "2019-02-15T08:11:28.601Z",
+			"responseCode": {
+				"code": 200,
+				"name": "OK",
+				"detail": {
+					"name": "OK",
+					"detail": "Standard response for successful HTTP requests. The actual response will depend on the request method used. In a GET request, the response will contain an entity corresponding to the requested resource. In a POST request the response will contain an entity describing or containing the result of the action."
+				}
+			},
+			"testPassFailCounts": {}
+		},
+		{
+			"name": "register - 스케쥴 등록(2)",
+			"id": "72a592c8-9c7b-e946-c218-50aeee542208",
+			"url": "localhost:8282/schedule/scheduleJob.do",
+			"time": "2019-02-15T08:11:28.601Z",
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {}
+		},
+		{
+			"name": "rescheduleJob - 스케쥴 변경",
+			"id": "e059ddcb-07b0-141f-7bc5-096feb07d3f6",
+			"url": "localhost:8282/schedule/rescheduleJob.do",
+			"time": "2019-02-15T08:11:28.601Z",
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {}
+		},
+		{
+			"name": "addExcludeDate - 스케줄 예외 일자 추가",
+			"id": "b059c6f2-f581-49e2-92f4-ab59d166cf21",
+			"url": "localhost:8282/schedule/addExcludedDate.do",
+			"time": "2019-02-15T08:11:28.601Z",
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {}
+		},
+		{
+			"name": "deleteJob - 특정 Job 삭제",
+			"id": "a3f8bd1e-2f08-1b06-390d-dfb69b57b48a",
+			"url": "localhost:8282/schedule/deleteJob.do",
+			"time": "2019-02-15T08:11:28.601Z",
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {}
+		},
+		{
+			"name": "deleteJobAll - 모든 Job 삭제",
+			"id": "88e81bfc-3d14-53b9-0ed7-7a3ebb67798a",
+			"url": "localhost:8282/schedule/deleteJobAll.do",
+			"time": "2019-02-15T08:11:28.601Z",
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {}
+		},
+		{
+			"name": "pauseJob - 특정 Job 중지",
+			"id": "f5c332c9-6d88-8141-c069-9f7c1c7805cb",
+			"url": "localhost:8282/schedule/pauseJob.do",
+			"time": "2019-02-15T08:11:28.601Z",
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {}
+		},
+		{
+			"name": "pauseTrigger - 특정 Trigger 중지",
+			"id": "0732554b-d6aa-6f9b-dc39-0fec13b0f6e4",
+			"url": "localhost:8282/schedule/pauseTrigger.do",
+			"time": "2019-02-15T08:11:28.601Z",
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {}
+		},
+		{
+			"name": "pauseAll - 모든 Trigger 중지",
+			"id": "a617a592-8c70-86d9-f067-d043f80fea19",
+			"url": "localhost:8282/schedule/pauseAll.do",
+			"time": "2019-02-15T08:11:28.601Z",
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {}
+		},
+		{
+			"name": "resumeJob - 특정 Job 재시작",
+			"id": "8aee7125-156d-7e63-ad9f-730f2bfe8579",
+			"url": "localhost:8282/schedule/resumeJob.do",
+			"time": "2019-02-15T08:11:28.601Z",
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {}
+		},
+		{
+			"name": "resumeTrigger - 특정 Trigger 재시작",
+			"id": "9aee49d5-3461-9a41-23af-cbec2234668c",
+			"url": "localhost:8282/schedule/resumeTrigger.do",
+			"time": "2019-02-15T08:11:28.601Z",
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {}
+		},
+		{
+			"name": "resumeAll - 모든 Trigger 재시작",
+			"id": "a97c7b20-922c-23ae-a1cc-f8b21e5b6435",
+			"url": "localhost:8282/schedule/resumeAll.do",
+			"time": "2019-02-15T08:11:28.601Z",
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {}
+		},
+		{
+			"name": "selectScheduleAll - 모든 스케쥴 조회",
+			"id": "51b0e87b-d13b-f93f-31fa-3f4e2e065a7d",
+			"url": "localhost:8282/schedule/selectScheduleAll.do",
+			"time": "2019-02-15T08:11:28.601Z",
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {}
+		},
+		{
+			"name": "getJobList",
+			"id": "7315fade-9c44-4d51-afe2-e758f4a0b752",
+			"url": "localhost:8282/rest/schedule/getJobList",
+			"time": "2019-02-15T08:11:28.601Z",
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {}
+		},
+		{
+			"name": "getTriggerList",
+			"id": "86a18ea2-afde-4052-a2fe-aaf858c7cb62",
+			"url": "localhost:8282/rest/schedule/getJobList",
+			"time": "2019-02-15T08:11:28.601Z",
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {}
+		},
+		{
+			"name": "addTrigger",
+			"id": "148b6aa6-05e4-440f-8e83-fc7bc3170e6b",
+			"url": "localhost:8282/rest/schedule/getJobList",
+			"time": "2019-02-15T08:11:28.601Z",
+			"responseCode": {
+				"code": 404,
+				"name": "Not Found",
+				"detail": {
+					"name": "Not Found",
+					"detail": "The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible."
+				}
+			},
+			"testPassFailCounts": {}
+		}
+	],
+	"synced": false
+}

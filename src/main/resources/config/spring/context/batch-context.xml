@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- spring batch context -->
+	
+	<!-- 현재 실행 중인 프로세스의 meta data를 저장
+		 ==> spring batch의 jobExecution과 stepExecution과 같은 domain 오브젝트를 저장하기 위한 CRUD 기능을 위해 사용 -->
+	
+	<!-- DB Repository (db에 메타데이터 저장) -->	
+<!-- 	<batch:job-repository id="jobRepository"
+                      data-source="dataSource"
+                      transaction-manager="transactionManager"
+                      isolation-level-for-create="SERIALIZABLE" table-prefix="BATCH_"
+                      max-varchar-length="1000"/> -->
+	
+	<!-- In-Memory Repository (메모리에 메타데이터 저장) -->
+<!-- 	<bean id="jobRepository"
+		class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">
+		<property name="transactionManager" ref="batchTransactionManager" />
+	</bean> 
+	
+	 아무 작업도 하지 않는 transactionManager
+ 	<bean id="batchTransactionManager" class="org.springframework.batch.support.transaction.ResourcelessTransactionManager" />
+	 -->
+	<!-- 작업을 시작하는데 사용. jobRepository 필요 -->
+<!-- 	<bean id="jobLauncher"
+		class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+		<property name="jobRepository" ref="jobRepository" />
+	</bean>
+	 -->
+	
+	<!-- Must set this -->
+
+	<!-- JobRegistry는 생성된 Job을 자동으로 Map형태로 저장하여 관리(추가, 삭제 등) -->
+	<!-- JobRegistry는 필수는 아니지만 context에서 Job을 추적하거나 다른 곳에서 생성된 Job을 application context의 중앙에 모을 때 유용. 
+	     등록된 Job의 이름과 속성들을 조작할 수 있으며 job name과 job instance의 Map의 형태로 이루워져 있다. -->
+	<bean id="jobRegistry" class="org.springframework.batch.core.configuration.support.MapJobRegistry" />
+	
+	<!-- JobRegistryBeanPostProcessor : Application Context가 올라가면서 bean 등록 시, 
+		 자동으로 JobRegistry에 Job(Job인터페이스를 구현한 bean들)을 등록 시켜준다. jobRegistry를 리턴. -->
+ 	<bean
+		class="org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor">
+		<property name="jobRegistry" ref="jobRegistry" />
+	</bean> 
+	
+<!-- 	<bean class="org.springframework.batch.core.scope.StepScope" /> -->
+	 
+	<!-- <bean id="customReader" class="com.hiair.app.batch.CustomReader" />
+	<bean id="customProcessor" class="com.hiair.app.batch.CustomProcessor" />
+	<bean id="customWriter" class="com.hiair.app.batch.CustomWriter" /> -->
+
+<!-- 	<bean id="rstReader"
+		class="org.mybatis.spring.batch.MyBatisPagingItemReader"
+		p:sqlSessionFactory-ref="sqlSessionFactory"
+		p:queryId="com.hiair.app.sample.test.service.SampleQueueMapper.select"
+		p:pageSize="5" scope="step">
+	</bean>
+	
+  	<bean id="rstWriter" class="org.mybatis.spring.batch.MyBatisBatchItemWriter">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+		<property name="statementId"
+			value="com.hiair.app.sample.test.service.SampleQueueMapper.update">
+		</property>
+	</bean>
+
+ 	<bean id="taskExecutor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="20" />
+		<property name="maxPoolSize" value="20" />
+		<property name="queueCapacity" value="25" />
+	</bean> 
+	
+	<batch:job id="reportJob">
+		<batch:step id="step1">
+			<batch:tasklet task-executor="taskExecutor" throttle-limit="5">
+				<batch:chunk reader="rstReader" processor="customProcessor"  writer="rstWriter"
+					commit-interval="100"> transaction commit 크기 (=chunkSize)
+				</batch:chunk>
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+	 -->
+	<!-- 
+	<bean id="customJobFactory" class="com.hiair.app.quartz.AutowiringSpringBeanJobFactory">
+	 	<property name="applicationContext" ref="applicationContext"></property>
+	</bean>
+	
+
+	<bean  id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		 <property name="configLocation" value="classpath:config/properties/config-quartz.properties" /> 
+		 <property name="triggers">
+			<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+				<property name="jobDetail" ref="jobDetail" />
+				<property name="cronExpression" value="0/5 * * * * ?" />
+			</bean>
+		</property> 
+		<property name="jobFactory" ref="customJobFactory"></property>
+	</bean>
+	
+	
+	<bean id="jobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+		<property name="jobClass" value="com.hiair.app.schedule.JobLauncherDetails" />
+		<property name="group" value="quartz-batch" />
+		<property name="jobDataAsMap">
+			<map>
+				<entry key="jobName" value="reportJob" />
+				<entry key="jobLocator" value-ref="jobRegistry" />
+				<entry key="jobLauncher" value-ref="jobLauncher" />
+				<entry key="param1" value="mkyong1" />
+				<entry key="param2" value="mkyong2" />
+			</map>
+		</property>
+	</bean>
+	 -->
+</beans>

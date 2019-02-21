@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<!-- interceptor -->
+	<mvc:interceptors>
+		<!-- 북킹엔진은 로그인 X. 세션 체크 인터셉터 불필요.. -->
+		<!-- <mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<mvc:exclude-mapping path="/"/>
+			<mvc:exclude-mapping path="/sys/file/**"/>
+			<mvc:exclude-mapping path="/cmm/user/view*"/>
+			<mvc:exclude-mapping path="/cmm/user/**"/>
+			<mvc:mapping path="/cmm/user/userDetail*"/>
+			<mvc:exclude-mapping path="/web/**"/>
+			<bean class="com.hiair.sys.session.SysSessionInterceptor"/>
+		</mvc:interceptor> -->
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<mvc:exclude-mapping path="/sys/file/**"/>
+			<mvc:exclude-mapping path="/web/**"/>
+			<bean class="com.hiair.sys.log.use.SysUseLogInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+</beans>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<properties>
+		<property name="log-path">/logs</property>
+	</properties>
+	
+	<appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [Thread: %t] [%-5level] :::: [%logger{1}.%M] - %msg%n" />
+		</Console>
+		<RollingFile name="rollingFile" fileName="${log-path}/hiair_ibe.log" filePattern="${log-path}/history/hiair_bookengine.log.%d{yyyy-MM-dd-HH}">
+			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [Thread: %t] [%-5level] :::: [%logger{36}] :::: [%M] - %msg%n" />
+			<Policies>
+				<SizeBasedTriggeringPolicy size="104857600" /> <!-- 100MB -->
+			</Policies>
+		</RollingFile>
+	</appenders>
+
+	<Loggers>
+		<Root level="WARN">
+			<AppenderRef ref="Console"/>
+		</Root>
+		<logger name="log4jdbc.log4j2" level="INFO" additivity="false">
+			<MarkerFilter marker="LOG4JDBC_JDBC" onMatch="DENY" onMismatch="NEUTRAL"/>
+			<appender-ref ref="Console"/>
+		</logger>
+		 
+		
+		<Logger name="org.springframework" level="WARN" additivity="false">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="rollingFile" />
+		</Logger>
+		
+		
+		<Logger name="com.hiair" level="DEBUG" additivity="false">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="rollingFile" />
+		</Logger>
+		<!-- 하위로 추가. -->
+		<Logger name="com.hiair.app.sample" level="DEBUG" additivity="false">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="rollingFile" />
+		</Logger>
+		<!-- batch quartz -->
+		<Logger name="org.quartz.core" level="DEBUG" additivity="false">
+			<AppenderRef ref="Console" />
+		</Logger>
+	</Loggers>
+</Configuration>
