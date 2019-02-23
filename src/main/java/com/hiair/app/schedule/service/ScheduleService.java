@@ -47,7 +47,8 @@ public interface ScheduleService {
 	//특정 Job 재시작 => 해당 Job의 모든 Trigger를 재시작
 	public void resumeJob(JobDetailsVO vo) throws SchedulerException;
 
-	public void addTrigger(Set<TriggerVO> vo) throws SchedulerException;
+	//특정 Job에 Trigger 추가
+	public TriggerVO addTrigger(TriggerVO vo) throws SchedulerException, ParseException;
 	
 	//특정 Trigger 또는 Trigger 그룹 중지  
 	public void pauseTrigger(TriggerVO vo) throws SchedulerException;
@@ -73,4 +74,12 @@ public interface ScheduleService {
 	//특정 Job의 Trigger List 조회 
 	public List<TriggerVO> getTriggersOfJob(JobDetailsVO vo) throws SchedulerException;
 	
+	//특정 Trigger 삭제
+	public void deleteTrigger(TriggerVO vo) throws SchedulerException;
+	
+	//특정 Trigger Detail
+	public <T extends TriggerVO> T getTriggerDetail(TriggerVO trigger) throws SchedulerException;
+
+	//특정 Trigger Update
+	public TriggerVO updateTrigger(TriggerVO trigger) throws SchedulerException;
 }

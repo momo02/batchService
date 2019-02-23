@@ -1,4 +1,4 @@
-package com.hiair.app.quartz;
+package com.hiair.app.schedule.config;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

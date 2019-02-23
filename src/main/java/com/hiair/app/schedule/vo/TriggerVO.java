@@ -9,10 +9,9 @@ import org.quartz.TriggerKey;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import io.swagger.annotations.ApiModelProperty;
-
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(
         use= JsonTypeInfo.Id.NAME,
@@ -22,33 +21,43 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         defaultImpl = TriggerVO.class
 )
 @JsonSubTypes({
-    @Type(value = SimpleTriggerVO.class, name = "SIMPLE"),
-    @Type(value = CronTriggerVO.class, name = "CRON"),
+	@Type(value = SimpleTriggerVO.class, name = "SIMPLE"),
+	@Type(value = CronTriggerVO.class, name = "CRON"),
 })
+
 public class TriggerVO {
 	
-	@ApiModelProperty(notes = "스케줄명", required = true, value="yj_schedule")
 	private String schedName;
 	
-	@ApiModelProperty(notes = "트리거명", example="yj_trigger_01")
+	@ApiModelProperty(notes = "트리거 명")
 	private String triggerName;
 	
-	@ApiModelProperty(notes = "트리거 그룹", required = true)
+	@ApiModelProperty(notes = "트리거 그룹")
 	private String triggerGroup;
 	
+	@ApiModelProperty(notes = "작업 명")
 	private String jobName;
+	
+	@ApiModelProperty(notes = "작업 그룹")
 	private String jobGroup;
 	
+	@ApiModelProperty(notes = "트리거 설명")
 	private String description;
 	
 	private int priority = Trigger.DEFAULT_PRIORITY;
 	private String triggerState;
-	private String triggerType;
+	
+	@ApiModelProperty(notes = "트리거 타입, deafult = CRON")
+	private String triggerType = "CRON";
 	
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+	@ApiModelProperty(notes = "시작 일시, Deafult = new Date()")
 	private Date startTime = new Date();
+	
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
+	@ApiModelProperty(notes = "종료 일시")
 	private Date endTime;
+	
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
 	private Date nextFireTime;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")

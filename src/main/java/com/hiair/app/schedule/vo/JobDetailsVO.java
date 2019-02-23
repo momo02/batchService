@@ -4,20 +4,32 @@ import org.quartz.JobDataMap;
 import org.quartz.JobKey;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.hiair.app.schedule.ScheduleConfig;
+
+import io.swagger.annotations.ApiModelProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL) 
 public class JobDetailsVO {
+	//작업 클래스 BASE PACKAGE 명
+	public static final String JOB_BASE_PACKAGE = "com.hiair.app.schedule.job.";
 	
+	@ApiModelProperty(notes = "스케줄명")
 	private String schedName;
+	
+	@ApiModelProperty(notes = "작업명")
 	private String jobName;
+	
+	@ApiModelProperty(notes = "작업그룹")
 	private String jobGroup;
+	
+	@ApiModelProperty(notes = "작업설명")
 	private String description;
 	private String jobClassName;
 	private String isDurable;
 	private String isNonconcurrent;
 	private String isUpdateData;
 	private String requestsRecovery;
+	
+	@ApiModelProperty(notes = "작업 데이터")
 	private JobDataMap jobDataMap;
 	private JobKey jobKey;
 	
@@ -46,7 +58,7 @@ public class JobDetailsVO {
 		this.description = description;
 	}
 	public String getJobClassName() {
-		return ScheduleConfig.JOB_BASE_PACKAGE + jobClassName;
+		return JOB_BASE_PACKAGE + jobClassName;
 	}
 	public void setJobClassName(String jobClassName) {
 		this.jobClassName = jobClassName;
