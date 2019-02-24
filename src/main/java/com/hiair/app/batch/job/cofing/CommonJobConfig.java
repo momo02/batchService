@@ -1,4 +1,4 @@
-package com.hiair.app.batch.job;
+package com.hiair.app.batch.job.cofing;
 
 import java.util.Date;
 

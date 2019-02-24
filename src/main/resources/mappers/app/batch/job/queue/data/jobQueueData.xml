@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hiair.app.batch.job.queue.data.service.JobQueueDataMapper">
+
+	<select id="list" resultType="jobQueueData">
+		SELECT
+			JOB_NAME
+			,RETRY_COUNT
+			,PRODUCE_USER_ID
+			,THREAD_COUNT
+			,QUEUE_SAVE_FLAG
+			,REMARKS
+			,PRODUCE_DATE
+			,MODIFIED_USER_ID
+			,MODIFIED_DATE
+		FROM QUEUE_GROUP
+	</select>
+	
+	<insert id="insert" parameterType="jobQueueData">
+		INSERT INTO QUEUE_GROUP
+					(
+					 JOB_NAME
+					,RETRY_COUNT
+					,PRODUCE_USER_ID
+					,THREAD_COUNT
+					,QUEUE_SAVE_FLAG
+					,REMARKS
+					,PRODUCE_DATE
+					,MODIFIED_USER_ID
+					,MODIFIED_DATE
+					)
+			VALUES(
+					#{jobName}
+					,#{retryCount}
+					,#{produceUserId}
+					,#{threadCount}
+					,#{queueSaveFlag}
+					<if test="remarks != null and remarks != ''">
+					,#{remarks}	
+					</if>
+					,#{produceDate}	
+					,#{modified_user_id}	
+					,CURRENT_TIMESTAMP	
+					)
+	</insert>
+<!-- 
+	<update id="update">
+		UPDATE QUEUE_GROUP
+		SET 
+			<if test="retryCount != null and retryCount != ''">
+				<![CDATA[
+					RETRY_COUNT = #{retryCount}		
+				]]>
+			</if>
+			<if test="retryCount != null and retryCount != ''">
+				<![CDATA[
+					RETRY_COUNT = #{retryCount}		
+				]]>
+			</if>
+			,PRODUCE_USER_ID=''
+			,THREAD_COUNT=1
+			,QUEUE_SAVE_FLAG='Y'
+			,REMARKS=''
+			,PRODUCE_DATE=''
+			,MODIFIED_USER_ID=''
+			,MODIFIED_DATE=''
+		WHERE 1 = 1
+		AND   JOB_NAME=''
+	</update>
+	 -->
+	
+	
+	
+
+</mapper>

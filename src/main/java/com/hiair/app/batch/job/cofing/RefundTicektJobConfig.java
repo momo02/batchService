@@ -1,4 +1,4 @@
-package com.hiair.app.batch.job;
+package com.hiair.app.batch.job.cofing;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;

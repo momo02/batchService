@@ -1,4 +1,4 @@
-package com.hiair.app.batch.job;
+package com.hiair.app.batch.job.cofing;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
