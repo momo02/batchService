@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hiair.app.queue.group.service.JobQueueGroupMapper">
+	
+	<resultMap type="com.hiair.app.queue.group.model.JobQueueGroup" id="jobQueueGroupMap">
+		<result property="jobGroup" column="JOB_GROUP" />
+		<result property="jobName" column="JOB_NAME" />
+		<result property="batchJobName" column="BATCH_JOB_NAME" />
+		<result property="retryCount" column="RETRY_COUNT"/>
+		<result property="produceUserId" column="PRODUCE_USER_ID"/>
+		<result property="threadCount" column="THREAD_COUNT"/>
+		<result property="queueSaveFlag" column="QUEUE_SAVE_FLAG"/>
+		<result property="jobData" column="JOB_DATA"/>
+		<result property="produceDate" column="PRODUCE_DATE"/>
+		<result property="modifiedUserId" column="MODIFIED_USER_ID"/>
+		<result property="modifiedDate" column="MODIFIED_DATE"/>
+	</resultMap>
+	
+	<select id="list" resultMap="jobQueueGroupMap">
+		SELECT
+			JOB_GROUP
+			,JOB_NAME
+			,BATCH_JOB_NAME   
+			,RETRY_COUNT
+			,PRODUCE_USER_ID
+			,THREAD_COUNT
+			,QUEUE_SAVE_FLAG
+			,JOB_DATA
+			,PRODUCE_DATE
+			,MODIFIED_USER_ID
+			,MODIFIED_DATE
+		FROM QUEUE_GROUP
+	</select>
+	
+		
+	<select id="detail" resultMap="jobQueueGroupMap">
+		SELECT
+			JOB_GROUP
+			,JOB_NAME
+			,BATCH_JOB_NAME   
+			,RETRY_COUNT
+			,PRODUCE_USER_ID
+			,THREAD_COUNT
+			,QUEUE_SAVE_FLAG
+			,JOB_DATA
+			,PRODUCE_DATE
+			,MODIFIED_USER_ID
+			,MODIFIED_DATE
+		FROM QUEUE_GROUP
+		WHERE 1 = 1
+		  AND JOB_GROUP = #{jobGroup}
+		  AND JOB_NAME = #{jobName}
+	</select>
+	
+	
+	<insert id="insert" parameterType="jobQueueGroup">
+		INSERT INTO QUEUE_GROUP
+					(
+					JOB_GROUP
+					,JOB_NAME
+					,BATCH_JOB_NAME   
+					,RETRY_COUNT
+					,PRODUCE_USER_ID
+					,THREAD_COUNT
+					,QUEUE_SAVE_FLAG
+					,JOB_DATA
+					,PRODUCE_DATE
+					,MODIFIED_USER_ID
+					,MODIFIED_DATE
+					)
+			VALUES( 
+					#{jobGroup}
+					,#{jobName}
+					,#{batchJobName}
+					,#{retryCount}
+					,#{produceUserId}
+					,#{threadCount}
+					,#{queueSaveFlag}
+					<if test="jobData != null and jobData != ''">
+					,#{jobData}	
+					</if>
+					,CURRENT_TIMESTAMP
+					,#{modifiedUserId}	
+					,CURRENT_TIMESTAMP	
+					)
+	</insert>
+<!-- 
+	<update id="update">
+		UPDATE QUEUE_GROUP
+		SET 
+			<if test="retryCount != null and retryCount != ''">
+				<![CDATA[
+					RETRY_COUNT = #{retryCount}		
+				]]>
+			</if>
+			<if test="retryCount != null and retryCount != ''">
+				<![CDATA[
+					RETRY_COUNT = #{retryCount}		
+				]]>
+			</if>
+			,PRODUCE_USER_ID=''
+			,THREAD_COUNT=1
+			,QUEUE_SAVE_FLAG='Y'
+			,JOB_DATA=''
+			,PRODUCE_DATE=''
+			,MODIFIED_USER_ID=''
+			,MODIFIED_DATE=''
+		WHERE 1 = 1
+		AND   JOB_NAME=''
+	</update>
+	 -->
+
+</mapper>

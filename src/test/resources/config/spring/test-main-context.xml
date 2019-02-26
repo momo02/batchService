@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- test용 context -->
+	<import resource="classpath:config/spring/context/test-database-context.xml"/>
+	<import resource="classpath:config/spring/context/test-root-context.xml"/>
+	
+	<import resource="classpath:config/spring/context/aop-context.xml"/>
+	<import resource="classpath:config/spring/context/batch-context.xml"/>
+	<import resource="classpath:config/spring/context/mybatis-context.xml"/>
+	<import resource="classpath:config/spring/context/schedule-context.xml"/>
+	<import resource="classpath:config/spring/context/transaction-context.xml"/>
+	
+</beans>

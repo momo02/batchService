@@ -10,20 +10,20 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations= {"classpath:config/spring/context/database-context.xml"})
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration(locations= {"classpath:config/spring/context/database-context.xml"})
 public class DataSourceTest {
 	
-	@Inject
-	private DataSource ds;
+	//@Inject
+	//private DataSource ds;
 	
 	@Test
 	public void testConnection() throws Exception{
-		try{
-			Connection con = ds.getConnection();
-			System.out.println(con);
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+//		try{
+//			Connection con = ds.getConnection();
+//			System.out.println(con);
+//		}catch(Exception e) {
+//			e.printStackTrace();
+//		}
 	}
 }

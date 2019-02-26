@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hiair.app.queue.data.service.JobQueueDataMapper">
+		
+	<resultMap type="com.hiair.app.queue.data.model.JobQueueData" id="JobQueueData">
+		<result property="queueDataNo" column="QUEUE_DATA_NO" />
+		<result property="jobGroup" column="JOB_GROUP" />
+		<result property="jobName" column="JOB_NAME" />
+		<result property="queueClass" column="QUEUE_CLASS"/>
+		<result property="processCount" column="PROCESS_COUNT"/>
+		<result property="recentProcessDate" column="RECENT_PROCESS_DATE"/>
+		<result property="recentProcessCode" column="RECENT_PROCESS_CODE"/>
+		<result property="recentRunServerIp" column="RECENT_RUN_SERVER_IP"/>
+		<result property="resetDate" column="RESET_DATE"/>
+		<result property="resetUserId" column="RESET_USER_ID"/>
+	</resultMap>	
+	
+</mapper>
