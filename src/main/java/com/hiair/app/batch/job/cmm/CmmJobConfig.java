@@ -124,9 +124,7 @@ public class CmmJobConfig {
 	  
 	  @Bean
 	  @StepScope
-	  public ItemWriter<?> writer2(/*@Value("#{jobParameters['jobName']}") String jobName,*//*확인용*/
-			  					  /*@Value("#{jobParameters['runDate']}") Date runDate,*//*확인용*/	
-			  					  /*@Value("#{jobParameters['writeQuery']}") String query*/) {
+	  public ItemWriter<?> writer2() {
 		  
 		  CompositeItemWriter<Object> cWriter = new CompositeItemWriter<>();   
 		  
