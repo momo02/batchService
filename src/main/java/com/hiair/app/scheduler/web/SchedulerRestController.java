@@ -1,35 +1,39 @@
 package com.hiair.app.scheduler.web;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SimpleTrigger;
+import org.quartz.impl.calendar.CronCalendar;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hiair.app.scheduler.service.ScheduleService;
-import com.hiair.app.scheduler.vo.CronTriggerVO;
-import com.hiair.app.scheduler.vo.JobDetailsVO;
-import com.hiair.app.scheduler.vo.SimpleTriggerVO;
-import com.hiair.app.scheduler.vo.TriggerVO;
+import com.hiair.app.scheduler.model.QrtzCalendar;
+import com.hiair.app.scheduler.model.QrtzJob;
+import com.hiair.app.scheduler.model.QrtzTrigger;
+import com.hiair.app.scheduler.service.SchedulerService;
 import com.hiair.cmm.model.RestResponse;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 @RestController // @Controller + @ResponseBody
 @RequestMapping(value = "/rest/schedule", method = RequestMethod.POST)
 @Api(tags = "쿼츠 스케줄 컨트롤러")
-public class ScheduleRestController {
+public class SchedulerRestController {
 
 	@Autowired
-	private ScheduleService scheduleService;
+	private SchedulerService scheduleService;
 
 	@ApiOperation(value = "", hidden = true)
 	@RequestMapping("/start")
@@ -147,7 +151,7 @@ public class ScheduleRestController {
 
 	@ApiOperation(value = "", hidden = true)
 	@RequestMapping("/rescheduleJob")
-	public ResponseEntity<RestResponse> rescheduleJob(@RequestBody TriggerVO vo) {
+	public ResponseEntity<RestResponse> rescheduleJob(@RequestBody QrtzTrigger vo) {
 		RestResponse restResponse = new RestResponse();
 
 		try {
@@ -171,9 +175,9 @@ public class ScheduleRestController {
 		return new ResponseEntity<>(restResponse, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "작업 추가", notes = "필수: jobName, jobGroup, jobClassName")
+	@ApiOperation(value = "작업 추가")
 	@RequestMapping("/addJob")
-	public ResponseEntity<RestResponse> addJob(@RequestBody JobDetailsVO vo) {
+	public ResponseEntity<RestResponse> addJob(@RequestBody QrtzJob vo) {
 		RestResponse restResponse = new RestResponse();
 
 		try {
@@ -197,12 +201,16 @@ public class ScheduleRestController {
 		return new ResponseEntity<>(restResponse, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "작업 삭제", notes = "required: jobName, jobGroup")
+	@ApiOperation(value = "작업 삭제")
+	@ApiImplicitParams({
+        @ApiImplicitParam(name = "jobName", value = "작업 명", required = true, dataType = "string", paramType = "query", defaultValue = "job1"),
+        @ApiImplicitParam(name = "jobGroup", value = "작업 그룹", required = true, dataType = "string", paramType = "query", defaultValue = "IBE"),
+	})
 	@RequestMapping("/deleteJob")
-	public ResponseEntity<RestResponse> deleteJob(@RequestBody JobDetailsVO vo) {
+	public ResponseEntity<RestResponse> deleteJob(@RequestParam("jobName") String jobName, @RequestParam("jobGroup") String jobGroup) {
 		RestResponse restResponse = new RestResponse();
 		try {
-			scheduleService.deleteJob(vo);
+			scheduleService.deleteJob(jobName, jobGroup);
 
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
@@ -234,12 +242,16 @@ public class ScheduleRestController {
 		return new ResponseEntity<>(restResponse, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "특정 Job 중지 => 해당 Job의 모든 Trigger를 중지", notes = "required: jobName, jobGroup")
+	@ApiOperation(value = "특정 Job 중지 => 해당 Job의 모든 Trigger를 중지")
+	@ApiImplicitParams({
+        @ApiImplicitParam(name = "jobName", value = "작업 명", required = true, dataType = "string", paramType = "query", defaultValue = "job1"),
+        @ApiImplicitParam(name = "jobGroup", value = "작업 그룹", required = true, dataType = "string", paramType = "query", defaultValue = "job1_Trigger"),
+	})
 	@RequestMapping("/pauseJob")
-	public ResponseEntity<RestResponse> pauseJob(@RequestBody JobDetailsVO vo) {
+	public ResponseEntity<RestResponse> pauseJob(@RequestParam("jobName") String jobName, @RequestParam("jobGroup") String jobGroup) {
 		RestResponse restResponse = new RestResponse();
 		try {
-			scheduleService.pauseJob(vo);
+			scheduleService.pauseJob(jobName, jobGroup);
 
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
@@ -252,12 +264,16 @@ public class ScheduleRestController {
 		return new ResponseEntity<>(restResponse, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "특정 Trigger 중지", notes = "required = triggerName, triggerGroup")
+	@ApiOperation(value = "특정 Trigger 중지")
+	@ApiImplicitParams({
+        @ApiImplicitParam(name = "triggerName", value = "트리거 명", required = true, dataType = "string", paramType = "query", defaultValue = "job1_Trigger"),
+        @ApiImplicitParam(name = "triggerGroup", value = "트리거 그룹", required = true, dataType = "string", paramType = "query", defaultValue = "IBE"),
+	})
 	@RequestMapping("/pauseTrigger")
-	public ResponseEntity<RestResponse> pauseTrigger(@RequestBody TriggerVO vo) {
+	public ResponseEntity<RestResponse> pauseTrigger(@RequestParam("triggerName") String triggerName, @RequestParam("triggerGroup") String triggerGroup) {
 		RestResponse restResponse = new RestResponse();
 		try {
-			scheduleService.pauseTrigger(vo);
+			scheduleService.pauseTrigger(triggerName, triggerGroup);
 
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
@@ -270,12 +286,16 @@ public class ScheduleRestController {
 		return new ResponseEntity<>(restResponse, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "특정 트리거 삭제", notes = "required = triggerName, triggerGroup")
+	@ApiOperation(value = "특정 트리거 삭제")
+	@ApiImplicitParams({
+        @ApiImplicitParam(name = "triggerName", value = "트리거 명", required = true, dataType = "string", paramType = "query", defaultValue = "job1_Trigger"),
+        @ApiImplicitParam(name = "triggerGroup", value = "트리거 그룹", required = true, dataType = "string", paramType = "query", defaultValue = "IBE"),
+	})
 	@RequestMapping("/deleteTrigger")
-	public ResponseEntity<RestResponse> deleteTrigger(@RequestBody TriggerVO vo) {
+	public ResponseEntity<RestResponse> deleteTrigger(@RequestParam("triggerName") String triggerName, @RequestParam("triggerGroup") String triggerGroup) {
 		RestResponse restResponse = new RestResponse();
 		try {
-			scheduleService.deleteTrigger(vo);
+			scheduleService.deleteTrigger(triggerName, triggerGroup);
 
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
@@ -306,12 +326,16 @@ public class ScheduleRestController {
 		return new ResponseEntity<>(restResponse, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "특정 Job 재시작 => 해당 Job의 모든 Trigger를 재시작", hidden = true)
+	@ApiOperation(value = "특정 Job 재시작 =>> 해당 Job의 모든 Trigger를 재시작", hidden = true)
+	@ApiImplicitParams({
+        @ApiImplicitParam(name = "jobName", value = "작업 명", required = true, dataType = "string", paramType = "query", defaultValue = "job1"),
+        @ApiImplicitParam(name = "jobGroup", value = "작업 그룹", required = true, dataType = "string", paramType = "query", defaultValue = "job1_Trigger"),
+	})
 	@RequestMapping("/resumeJob")
-	public ResponseEntity<RestResponse> resumeJob(@RequestBody JobDetailsVO vo) {
+	public ResponseEntity<RestResponse> resumeJob(@RequestParam("jobName") String jobName, @RequestParam("jobGroup") String jobGroup) {
 		RestResponse restResponse = new RestResponse();
 		try {
-			scheduleService.resumeJob(vo);
+			scheduleService.resumeJob(jobName, jobGroup);
 
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
@@ -324,12 +348,16 @@ public class ScheduleRestController {
 		return new ResponseEntity<>(restResponse, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "특정 Trigger 재시작", notes = "required = triggerName, triggerGroup")
+	@ApiOperation(value = "특정 Trigger 재시작")
+	@ApiImplicitParams({
+        @ApiImplicitParam(name = "triggerName", value = "트리거 명", required = true, dataType = "string", paramType = "query", defaultValue = "job1_Trigger"),
+        @ApiImplicitParam(name = "triggerGroup", value = "트리거 그룹", required = true, dataType = "string", paramType = "query", defaultValue = "IBE"),
+	})
 	@RequestMapping("/resumeTrigger")
-	public ResponseEntity<RestResponse> resumeTrigger(@RequestBody TriggerVO vo) {
+	public ResponseEntity<RestResponse> resumeTrigger(@RequestParam("triggerName") String triggerName, @RequestParam("triggerGroup") String triggerGroup) {
 		RestResponse restResponse = new RestResponse();
 		try {
-			scheduleService.resumeTrigger(vo);
+			scheduleService.resumeTrigger(triggerName, triggerGroup);
 
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
@@ -382,7 +410,7 @@ public class ScheduleRestController {
 
 	@ApiOperation(value = "addExcludedDate", notes = "예외 일자 추가", hidden = true)
 	@RequestMapping("/addExcludedDate")
-	public ResponseEntity<RestResponse> addExcludedDate(@RequestBody TriggerVO vo) {
+	public ResponseEntity<RestResponse> addExcludedDate(@RequestBody QrtzTrigger vo) {
 		RestResponse restResponse = new RestResponse();
 
 		try {
@@ -407,17 +435,20 @@ public class ScheduleRestController {
 		return new ResponseEntity<>(restResponse, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "작업 리스트 조회(그룹)", notes = "특정 작업그룹의 작업리스트 조회시 jobGroup 필수")
+	@ApiOperation(value = "작업 리스트 조회(그룹)")
+	@ApiImplicitParams({
+        @ApiImplicitParam(name = "jobGroup", value = "작업 그룹명", required = false, dataType = "string", paramType = "query", defaultValue = "IBE"),
+	})
 	@RequestMapping("/getJobList")
-	public ResponseEntity<RestResponse> getJobList(@RequestBody(required = false) JobDetailsVO vo) {
+	public ResponseEntity<RestResponse> getJobList(@RequestParam(name = "jobGroup", required = false) String jobGroup) {
 		RestResponse restResponse = new RestResponse();
-		List<JobDetailsVO> jobList = null;
-
+		List<QrtzJob> jobList = null;
+		
 		try {
-			if (null == vo.getJobGroup()) {
+			if (null == jobGroup) {
 				jobList = scheduleService.getJobAll();
 			} else {
-				jobList = scheduleService.getJobsByGroup(vo.getJobGroup());
+				jobList = scheduleService.getJobsByGroup(jobGroup);
 			}
 			
 			restResponse.getItems().add(jobList);
@@ -431,14 +462,18 @@ public class ScheduleRestController {
 		return new ResponseEntity<>(restResponse, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "특정 작업의 트리거 리스트 조회", notes = "required: jobName, jobGroup")
+	@ApiOperation(value = "특정 작업의 트리거 리스트 조회")
+	@ApiImplicitParams({
+        @ApiImplicitParam(name = "jobName", value = "작업 명", required = true, dataType = "string", paramType = "query", defaultValue = "job1"),
+        @ApiImplicitParam(name = "jobGroup", value = "작업 그룹", required = true, dataType = "string", paramType = "query", defaultValue = "job1_Trigger"),
+	})
 	@RequestMapping("/getTriggerList")
-	public ResponseEntity<RestResponse> getTriggerList(@RequestBody(required = true) JobDetailsVO vo) {
+	public ResponseEntity<RestResponse> getTriggerList(@RequestParam("jobName") String jobName, @RequestParam("jobGroup") String jobGroup) {
 		RestResponse restResponse = new RestResponse();
-		List<TriggerVO> triggerList = null;
+		List<QrtzTrigger> triggerList = null;
 
 		try {
-			triggerList = scheduleService.getTriggersOfJob(vo);
+			triggerList = scheduleService.getTriggersOfJob(jobName, jobGroup);
 			restResponse.getItems().add(triggerList);
 			
 		} catch (Exception e) {
@@ -453,11 +488,11 @@ public class ScheduleRestController {
 		return new ResponseEntity<>(restResponse, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "특정 작업에 트리거 추가", notes = "필수: jobName, jobGroup")
+	@ApiOperation(value = "특정 작업에 트리거 추가")
 	@RequestMapping("/addTrigger")
-	public ResponseEntity<RestResponse> addTrigger(@RequestBody TriggerVO trigger) {
+	public ResponseEntity<RestResponse> addTrigger(@RequestBody QrtzTrigger trigger) {
 		RestResponse restResponse = new RestResponse();
-		TriggerVO vo = null;
+		QrtzTrigger vo = null;
 		try {
 			vo = scheduleService.addTrigger(trigger);
 			restResponse.getItems().add(vo);
@@ -481,18 +516,18 @@ public class ScheduleRestController {
 		return new ResponseEntity<>(restResponse, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "트리거의 세부정보", notes = "필수: triggerName, triggerGroup")
+	@ApiOperation(value = "트리거의 세부정보")
+	@ApiImplicitParams({
+        @ApiImplicitParam(name = "triggerName", value = "트리거 명", required = true, dataType = "string", paramType = "query", defaultValue = "job1_Trigger"),
+        @ApiImplicitParam(name = "triggerGroup", value = "트리거 그룹", required = true, dataType = "string", paramType = "query", defaultValue = "IBE"),
+	})
 	@RequestMapping("/getTriggerDetail")
-	public ResponseEntity<RestResponse> getTriggerDetail(@RequestBody TriggerVO trigger) {
+	public ResponseEntity<RestResponse> getTriggerDetail(@RequestParam("triggerName") String triggerName, @RequestParam("triggerGroup") String triggerGroup) {
 		RestResponse restResponse = new RestResponse();
 		try {
-			TriggerVO vo = scheduleService.getTriggerDetail(trigger);
+			QrtzTrigger triggerVO = scheduleService.getTriggerDetail(triggerName, triggerGroup);
 
-			if (vo instanceof CronTriggerVO) {
-				restResponse.getItems().add((CronTriggerVO) vo);
-			} else if (vo instanceof SimpleTriggerVO) {
-				restResponse.getItems().add((SimpleTriggerVO) vo);
-			}
+			restResponse.getItems().add(triggerVO);
 
 		} catch (SchedulerException e) {
 			e.printStackTrace();
@@ -505,20 +540,95 @@ public class ScheduleRestController {
 		return new ResponseEntity<>(restResponse, HttpStatus.OK);
 	}
 	
-	@ApiOperation(value = "특정 트리거 변경", notes = "필수: triggerName, triggerGroup")
-	@RequestMapping("/updateTrigger")
-	public ResponseEntity<RestResponse> updateTrigger(@RequestBody TriggerVO trigger) {
+	@ApiOperation(value = "예외처리 리스트")
+	@ApiImplicitParams({
+        @ApiImplicitParam(name = "name", value = "캘린더 명", required = false, dataType = "string", paramType = "query"),
+	})
+	@RequestMapping("/getCalendarList")
+	public ResponseEntity<RestResponse> getCalendarList(@RequestParam(name = "name", required = false) String name) {
 		RestResponse restResponse = new RestResponse();
+		
 		try {
-			TriggerVO vo = scheduleService.updateTrigger(trigger);
-			
-			if (vo instanceof CronTriggerVO) {
-				restResponse.getItems().add((CronTriggerVO) vo);
-			} else if (vo instanceof SimpleTriggerVO) {
-				restResponse.getItems().add((SimpleTriggerVO) vo);
+			if (null == name){
+				List<QrtzCalendar> calendarList = scheduleService.getCalendarList();
+				restResponse.getItems().add(calendarList);
+			}else{
+				QrtzCalendar calendarVO = scheduleService.getCalendarDetail(name);
+				restResponse.getItems().add(calendarVO);
 			}
 			
 		} catch (SchedulerException e) {
+			
+			e.printStackTrace();
+			restResponse.setErrorCode("-1");
+			restResponse.setErrorMessage(e.getMessage());
+
+			return new ResponseEntity<>(restResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseEntity<>(restResponse, HttpStatus.OK);
+	}
+	
+	@ApiOperation(value = "캘린더 추가")
+	@RequestMapping("/addCalendar")
+	public ResponseEntity<RestResponse> addCalendar(@RequestBody QrtzCalendar calendarVO) {
+		RestResponse restResponse = new RestResponse();
+		
+		try {
+			scheduleService.addCalendar(calendarVO);
+			
+		} catch (ParseException e) {
+			e.printStackTrace();
+			restResponse.setErrorCode("-1");
+			restResponse.setErrorMessage(e.getMessage());
+
+			return new ResponseEntity<>(restResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+			restResponse.setErrorCode("-1");
+			restResponse.setErrorMessage(e.getMessage());
+
+			return new ResponseEntity<>(restResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseEntity<>(restResponse, HttpStatus.OK);
+	}
+	
+	@ApiOperation(value = "캘린더 제거")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "calendarName", value = "캘린더 명", required = true, dataType = "string", paramType = "query", defaultValue = "yjCalendar"),
+	})
+	@RequestMapping("/deleteCalendar")
+	public ResponseEntity<RestResponse> deleteCalendar(@RequestParam("calendarName") String calendarName) {
+		RestResponse restResponse = new RestResponse();
+		try {
+			scheduleService.deleteCalendar(calendarName);
+
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+			restResponse.setErrorCode("-1");
+			restResponse.setErrorMessage(e.getMessage());
+
+			return new ResponseEntity<>(restResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<>(restResponse, HttpStatus.OK);
+	}
+	
+	@ApiOperation(value = "트리거에 캘린더 추가")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "calendarName", value = "캘린더 명", required = true, dataType = "string", paramType = "query", defaultValue = "yjCalendar"),
+        @ApiImplicitParam(name = "triggerName", value = "트리거 명", required = true, dataType = "string", paramType = "query", defaultValue = "job1_Trigger"),
+        @ApiImplicitParam(name = "triggerGroup", value = "트리거 그룹", required = true, dataType = "string", paramType = "query", defaultValue = "IBE"),
+	})
+	@RequestMapping("/addCalendarToTrigger")
+	public ResponseEntity<RestResponse> addCalendarToTrigger(@RequestParam("calendarName") String calendarName,
+			@RequestParam("triggerName") String triggerName, @RequestParam("triggerGroup") String triggerGroup) {
+		RestResponse restResponse = new RestResponse();
+		
+		try {
+			scheduleService.addCalendarToTrigger(calendarName, triggerName, triggerGroup);
+		} catch (SchedulerException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 			restResponse.setErrorCode("-1");
 			restResponse.setErrorMessage(e.getMessage());
@@ -529,4 +639,25 @@ public class ScheduleRestController {
 		return new ResponseEntity<>(restResponse, HttpStatus.OK);
 	}
 	
+	@ApiOperation(value = "트리거의 캘린더 제거")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "triggerName", value = "트리거 명", required = true, dataType = "string", paramType = "query", defaultValue = "job1_Trigger"),
+		@ApiImplicitParam(name = "triggerGroup", value = "트리거 그룹", required = true, dataType = "string", paramType = "query", defaultValue = "IBE"),
+	})
+	@RequestMapping("/removeCalendarFromTrigger")
+	public ResponseEntity<RestResponse> removeCalendarFromTrigger(@RequestParam("triggerName") String triggerName, @RequestParam("triggerGroup") String triggerGroup) {
+		RestResponse restResponse = new RestResponse();
+		
+		try {
+			scheduleService.removeCalendarFromTrigger(triggerName, triggerGroup);
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+			restResponse.setErrorCode("-1");
+			restResponse.setErrorMessage(e.getMessage());
+			
+			return new ResponseEntity<>(restResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseEntity<>(restResponse, HttpStatus.OK);
+	}
 }

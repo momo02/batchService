@@ -2,17 +2,146 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hiair.app.queue.data.service.JobQueueDataMapper">
 		
-	<resultMap type="com.hiair.app.queue.data.model.JobQueueData" id="JobQueueData">
+	<resultMap type="com.hiair.app.queue.data.model.JobQueueData" id="jobQueueDataMap">
 		<result property="queueDataNo" column="QUEUE_DATA_NO" />
 		<result property="jobGroup" column="JOB_GROUP" />
 		<result property="jobName" column="JOB_NAME" />
 		<result property="queueClass" column="QUEUE_CLASS"/>
 		<result property="processCount" column="PROCESS_COUNT"/>
-		<result property="recentProcessDate" column="RECENT_PROCESS_DATE"/>
+<!-- 		<result property="recentProcessDate" column="RECENT_PROCESS_DATE"/>
 		<result property="recentProcessCode" column="RECENT_PROCESS_CODE"/>
-		<result property="recentRunServerIp" column="RECENT_RUN_SERVER_IP"/>
+		<result property="recentRunServerIp" column="RECENT_RUN_SERVER_IP"/> -->
+		
+		<result property="processDate" column="RECENT_PROCESS_DATE"/>
+		<result property="processCode" column="RECENT_PROCESS_CODE"/>
+		<result property="processServerIp" column="RECENT_RUN_SERVER_IP"/>
+		
 		<result property="resetDate" column="RESET_DATE"/>
 		<result property="resetUserId" column="RESET_USER_ID"/>
 	</resultMap>	
+	
+	
+	<select id="list2" parameterType="jobQueueData" resultMap="jobQueueDataMap">
+		SELECT
+				QUEUE_DATA_NO
+				,JOB_GROUP
+				,JOB_NAME
+				,QUEUE_CLASS
+				,PROCESS_COUNT
+				,RECENT_PROCESS_DATE  
+				,RECENT_PROCESS_CODE
+				,RECENT_RUN_SERVER_IP
+				,RESET_DATE
+				,RESET_USER_ID 
+		FROM QUEUE_DATA
+		WHERE JOB_GROUP = #{jobGroup}
+  		  AND JOB_NAME = #{jobName}
+	</select>
+	
+<!-- 	<select id="list_noPaging" parameterType="jobQueueData" resultMap="jobQueueDataMap">
+		SELECT
+				QUEUE_DATA_NO
+				,JOB_GROUP
+				,JOB_NAME
+				,QUEUE_CLASS
+				,PROCESS_COUNT
+				,RECENT_PROCESS_DATE  
+				,RECENT_PROCESS_CODE
+				,RECENT_RUN_SERVER_IP
+				,RESET_DATE
+				,RESET_USER_ID 
+		FROM QUEUE_DATA
+		WHERE JOB_GROUP = #{jobParameters['jobGroup']}
+  		  AND JOB_NAME = #{jobParameters['jobName']}
+	</select> -->
+	
+	<select id="list" resultMap="jobQueueDataMap">
+		SELECT
+				QUEUE_DATA_NO
+				,JOB_GROUP
+				,JOB_NAME
+				,QUEUE_CLASS
+				,PROCESS_COUNT
+				,RECENT_PROCESS_DATE  
+				,RECENT_PROCESS_CODE
+				,RECENT_RUN_SERVER_IP
+				,RESET_DATE
+				,RESET_USER_ID 
+		FROM QUEUE_DATA
+		<!-- jobGroup,jobName 등은 itemReader paramValue -->
+		<![CDATA[ 
+		WHERE JOB_GROUP = #{jobGroup} 
+  		  AND JOB_NAME = #{jobName}  
+  		  AND RECENT_PROCESS_CODE <> 'SUCCESS'
+  		  AND PROCESS_COUNT <= #{retryCount}
+  		LIMIT #{_skiprows}, #{_pagesize} 
+  		]]>
+	</select>
+	
+	<select id="detail" resultMap="jobQueueDataMap">
+		 SELECT 
+		 		QUEUE_DATA_NO
+				,JOB_GROUP
+				,JOB_NAME
+				,QUEUE_CLASS
+				,PROCESS_COUNT
+				,RECENT_PROCESS_DATE  
+				,RECENT_PROCESS_CODE
+				,RECENT_RUN_SERVER_IP
+				,RESET_DATE
+				,RESET_USER_ID 
+		FROM 	QUEUE_DATA
+		WHERE 	QUEUE_DATA_NO = #{queueDataNo}
+	</select>
+	
+	
+	<insert id="insert" parameterType="jobQueueData">
+		INSERT INTO QUEUE_DATA
+					(
+					JOB_GROUP
+					,JOB_NAME
+					,QUEUE_CLASS
+					,PROCESS_COUNT
+					,RECENT_PROCESS_CODE
+					,RESET_DATE
+					,RESET_USER_ID 
+					)
+			VALUES( 
+					#{jobGroup}
+					,#{jobName}
+					,#{queueClass}
+					,#{processCount}
+					,'WAITING' 
+					,#{resetDate}
+					,#{resetUserId}	
+					)
+	</insert>
+	
+<!-- 	<update id="update">
+		UPDATE QUEUE_DATA 
+		SET    
+		       PROCESS_COUNT = (PROCESS_COUNT + 1), 
+		       RECENT_PROCESS_DATE = CURRENT_TIMESTAMP, 
+		       RECENT_PROCESS_CODE = #{recentProcessCode}, 
+		       RECENT_RUN_SERVER_IP = #{recentRunServerIp}
+		WHERE  QUEUE_DATA_NO = #{queueDataNo}; 
+	</update> -->
+	
+	<update id="update" parameterType="jobQueueData">
+		UPDATE QUEUE_DATA 
+		SET
+			 <if test="processCount != null and processCount != ''">
+			 PROCESS_COUNT = #{processCount},
+			 </if>
+			 RECENT_PROCESS_DATE = CURRENT_TIMESTAMP, 
+		     RECENT_PROCESS_CODE = #{processCode},
+		     RECENT_RUN_SERVER_IP = #{processServerIp}
+		WHERE  QUEUE_DATA_NO = #{queueDataNo}
+	</update>
+	
+	
+	<delete id="deleteAll">
+		DELETE FROM QUEUE_DATA
+	</delete>
 	
 </mapper>

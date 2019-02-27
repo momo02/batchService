@@ -13,4 +13,5 @@ public interface JobQueueHistoryService {
 	public int insert(JobQueueHistory model);
 	public int update(JobQueueHistory model);
 	public int delete(JobQueueHistory model);
+	public int deleteAll();
 }

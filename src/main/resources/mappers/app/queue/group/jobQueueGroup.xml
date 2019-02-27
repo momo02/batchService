@@ -16,7 +16,7 @@
 		<result property="modifiedDate" column="MODIFIED_DATE"/>
 	</resultMap>
 	
-	<select id="list" resultMap="jobQueueGroupMap">
+	<select id="list" parameterType="jobQueueGroup" resultMap="jobQueueGroupMap">
 		SELECT
 			JOB_GROUP
 			,JOB_NAME
@@ -30,6 +30,9 @@
 			,MODIFIED_USER_ID
 			,MODIFIED_DATE
 		FROM QUEUE_GROUP
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+  			<if test="jobGroup != null"> AND JOB_GROUP = #{jobGroup}</if>
+  		</trim>
 	</select>
 	
 		
@@ -47,9 +50,8 @@
 			,MODIFIED_USER_ID
 			,MODIFIED_DATE
 		FROM QUEUE_GROUP
-		WHERE 1 = 1
-		  AND JOB_GROUP = #{jobGroup}
-		  AND JOB_NAME = #{jobName}
+		WHERE JOB_GROUP = #{jobGroup}
+  		  AND JOB_NAME = #{jobName}
 	</select>
 	
 	
@@ -84,6 +86,19 @@
 					,CURRENT_TIMESTAMP	
 					)
 	</insert>
+	
+	
+	<delete id="delete" parameterType="jobQueueGroup">
+		DELETE FROM QUEUE_GROUP
+		WHERE JOB_GROUP = #{jobGroup}
+  		  AND JOB_NAME = #{jobName}
+	</delete>
+	
+	<delete id="deleteAll">
+		DELETE FROM QUEUE_GROUP
+	</delete>
+	
+	
 <!-- 
 	<update id="update">
 		UPDATE QUEUE_GROUP

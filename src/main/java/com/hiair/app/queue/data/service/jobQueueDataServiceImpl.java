@@ -17,8 +17,8 @@ public class jobQueueDataServiceImpl implements JobQueueDataService{
 	@Autowired
 	private JobQueueDataMapper mapper;
 	
-	public List<JobQueueData> list() {
-		return mapper.list();
+	public List<JobQueueData> list(JobQueueData model) {
+		return mapper.list(model);
 	}
 	
 	public JobQueueData detail(JobQueueData model) {
@@ -35,5 +35,9 @@ public class jobQueueDataServiceImpl implements JobQueueDataService{
 
 	public int delete(JobQueueData model) {
 		return mapper.delete(model);
+	}
+
+	public int deleteAll() {
+		return mapper.deleteAll();
 	}
 }

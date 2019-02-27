@@ -17,8 +17,8 @@ public class JobQueueGroupServiceImpl implements JobQueueGroupService{
 	@Autowired
 	private JobQueueGroupMapper mapper;
 
-	public List<JobQueueGroup> list() {
-		return mapper.list();
+	public List<JobQueueGroup> list(JobQueueGroup model) {
+		return mapper.list(model);
 	}
 	
 	public JobQueueGroup detail(JobQueueGroup model) {
@@ -35,6 +35,10 @@ public class JobQueueGroupServiceImpl implements JobQueueGroupService{
 
 	public int delete(JobQueueGroup model) {
 		return mapper.delete(model);
+	}
+
+	public int deleteAll() {
+		return mapper.deleteAll();
 	}
 
 }

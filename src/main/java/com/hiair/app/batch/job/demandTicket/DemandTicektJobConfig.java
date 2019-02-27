@@ -31,8 +31,8 @@ public class DemandTicektJobConfig {
 	  
 	  @Autowired
 	  private ItemReader<?> reader;
-	  @Autowired
-	  private ItemWriter<?> writer;
+//	  @Autowired
+//	  private ItemWriter<?> writer;
 	  @Autowired
 	  private TaskExecutor taskExecutor;
 	  
@@ -87,13 +87,15 @@ public class DemandTicektJobConfig {
 	            	  logger.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 	        		  logger.debug("step >>>>>>>>>>>>>>>>>>>>> " + STEP_NM );
 	        		  logger.debug("reader >>>>>>>>>>>>>>>>>>>>> " + reader ); 
-	        		  logger.debug("writer >>>>>>>>>>>>>>>>>>>>> " + writer ); 
+//	        		  logger.debug("writer >>>>>>>>>>>>>>>>>>>>> " + writer ); 
 	        		  logger.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 	                  
 	                  return RepeatStatus.FINISHED;
 	              })
 	              .build();
 	  }
+
+
 	  
 	  
 //processor 보류..

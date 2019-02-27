@@ -59,7 +59,7 @@ public class SpringBatchConfigurer implements BatchConfigurer {
 	}
 
 	/**
-	 * Registers {@link JobExplorer} bean. This bean is actually created in {@link CommonJobConfig}.
+	 * Registers {@link JobExplorer} bean. This bean is actually created in {@link CmmJobConfig}.
 	 */
 	@Override
 	public JobExplorer getJobExplorer() throws Exception {

@@ -7,11 +7,11 @@ import com.hiair.app.queue.group.model.JobQueueGroup;
 
 public interface JobQueueGroupService {
 	
-	public List<JobQueueGroup> list();
+	public List<JobQueueGroup> list(JobQueueGroup model);
 	public JobQueueGroup detail(JobQueueGroup model);
 	
 	public int insert(JobQueueGroup model);
 	public int update(JobQueueGroup model);
 	public int delete(JobQueueGroup model);
-	 
+	public int deleteAll();
 }

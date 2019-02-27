@@ -8,10 +8,11 @@ import com.hiair.sys.annotation.Mapper;
 @Mapper
 public interface JobQueueGroupMapper {
 	
-	public List<JobQueueGroup> list();
+	public List<JobQueueGroup> list(JobQueueGroup model);
 	public JobQueueGroup detail(JobQueueGroup model);
 	
 	public int insert(JobQueueGroup model);
 	public int update(JobQueueGroup model);
 	public int delete(JobQueueGroup model);
+	public int deleteAll();
 }

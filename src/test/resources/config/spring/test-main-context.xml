@@ -10,7 +10,6 @@
 	<import resource="classpath:config/spring/context/aop-context.xml"/>
 	<import resource="classpath:config/spring/context/batch-context.xml"/>
 	<import resource="classpath:config/spring/context/mybatis-context.xml"/>
-	<import resource="classpath:config/spring/context/schedule-context.xml"/>
 	<import resource="classpath:config/spring/context/transaction-context.xml"/>
 	
 </beans>

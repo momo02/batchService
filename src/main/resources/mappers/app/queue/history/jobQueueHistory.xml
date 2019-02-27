@@ -1,5 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper
-	namespace="mappers.app.queue.history.jobQueueHistory">
+<mapper namespace="com.hiair.app.queue.history.service.JobQueueHistoryMapper">
+	
+	<resultMap type="com.hiair.app.queue.history.model.JobQueueHistory" id="jobQueueHistoryMap">
+		<result property="queueHistoryNo" column="QUEUE_HISTORY_NO" />
+		<result property="queueDataNo" column="QUEUE_DATA_NO" />
+		<result property="processCode" column="PROCESS_CODE" />
+		<result property="processContent" column="PROCESS_CONTENT"/>
+		<result property="processDate" column="PROCESS_DATE"/>
+		<result property="processServerIp" column="PROCESS_SERVER_IP"/>
+	</resultMap>
+	
+	<select id="list" resultMap="jobQueueHistoryMap">
+		SELECT QUEUE_HISTORY_NO, 
+		       QUEUE_DATA_NO, 
+		       PROCESS_CODE, 
+		       PROCESS_CONTENT, 
+		       PROCESS_DATE, 
+		       PROCESS_SERVER_IP 
+		FROM   QUEUE_HISOTRY; 
+	</select>
+	
+	<select id="detail" resultMap="jobQueueHistoryMap">
+		SELECT QUEUE_HISTORY_NO, 
+		       QUEUE_DATA_NO, 
+		       PROCESS_CODE, 
+		       PROCESS_CONTENT, 
+		       PROCESS_DATE, 
+		       PROCESS_SERVER_IP 
+		FROM   QUEUE_HISOTRY
+		WHERE  QUEUE_HISTORY_NO = #{queueHistoryNo}
+	</select>
+	
+	
+	<insert id="insert" parameterType="jobQueueData">
+		INSERT INTO QUEUE_HISOTRY 
+            (
+             QUEUE_DATA_NO, 
+             PROCESS_CODE, 
+             PROCESS_CONTENT, 
+             PROCESS_DATE, 
+             PROCESS_SERVER_IP
+            ) 
+		VALUES     
+			(
+			#{queueDataNo}, 
+            #{processCode}, 
+            #{processContent}, 
+            CURRENT_TIMESTAMP, 
+            #{processServerIp}
+            ); 
+	</insert>
+	
+	<delete id="deleteAll">
+		DELETE FROM QUEUE_HISOTRY
+	</delete>
+	
 </mapper>

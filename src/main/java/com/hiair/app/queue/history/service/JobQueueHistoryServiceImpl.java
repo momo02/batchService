@@ -36,4 +36,8 @@ public class JobQueueHistoryServiceImpl implements JobQueueHistoryService{
 	public int delete(JobQueueHistory model) {
 		return mapper.delete(model);
 	}
+
+	public int deleteAll() {
+		return mapper.deleteAll();
+	}
 }

@@ -25,6 +25,13 @@ public class JobQueueGroup {
 	private String modifiedUserId;	/* 수정 사용자 ID */
 	private String modifiedDate;	/* 수정 일시 */
 	
+	public JobQueueGroup() {}
+	
+	public JobQueueGroup(String jobGroup, String jobName) {
+		this.jobGroup = jobGroup;
+		this.jobName = jobName;
+	}
+	
 	public String getJobGroup() {
 		return jobGroup;
 	}

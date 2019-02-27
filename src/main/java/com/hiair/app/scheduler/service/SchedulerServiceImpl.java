@@ -1,16 +1,13 @@
 package com.hiair.app.scheduler.service;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
-import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TimeZone;
 
-import org.quartz.CronExpression;
 import org.quartz.CronTrigger;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
@@ -31,24 +28,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 
-import com.hiair.app.scheduler.vo.CronTriggerVO;
-import com.hiair.app.scheduler.vo.JobDetailsVO;
-import com.hiair.app.scheduler.vo.ScheduleJobVO;
-import com.hiair.app.scheduler.vo.SimpleTriggerVO;
-import com.hiair.app.scheduler.vo.TriggerVO;
+import com.hiair.app.scheduler.model.QrtzCalendar;
+import com.hiair.app.scheduler.model.QrtzJob;
+import com.hiair.app.scheduler.model.QrtzSchedulerJob;
+import com.hiair.app.scheduler.model.QrtzTrigger;
 import com.hiair.cmm.util.CmmJsonUtils;
 
 @Service
-public class ScheduleServiceImpl implements ScheduleService {
+public class SchedulerServiceImpl implements SchedulerService {
 
-	private static final Logger logger = LoggerFactory.getLogger(ScheduleServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(SchedulerServiceImpl.class);
 
 	// @Autowired
 	// private SchedulerFactoryBean schedulerFactoryBean;
-
+	
 	public static Scheduler scheduler;
 
-	public ScheduleServiceImpl(SchedulerFactoryBean schedulerFactoryBean) {
+	public SchedulerServiceImpl(SchedulerFactoryBean schedulerFactoryBean) {
 		scheduler = schedulerFactoryBean.getScheduler();
 	}
 
@@ -87,9 +83,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 	 * 
 	 * @throws ClassNotFoundException
 	 */
-	public void scheduleJob(ScheduleJobVO vo) throws SchedulerException, ClassNotFoundException {
-		JobDetailsVO job = vo.getJob();
-		Set<TriggerVO> triggers = vo.getTriggers();
+	public void scheduleJob(QrtzSchedulerJob vo) throws SchedulerException, ClassNotFoundException {
+		QrtzJob job = vo.getJob();
+		Set<QrtzTrigger> triggers = vo.getTriggers();
 
 		// true => 중복되는 job or trigger key가 이미 존재할 경우 교체
 		// (cf.. false 일경우 중복 시 에러 발생.
@@ -113,7 +109,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 	 * 
 	 * @throws ParseException
 	 */
-	public void rescheduleJob(TriggerVO orgTrigger) throws SchedulerException, ParseException {
+	public void rescheduleJob(QrtzTrigger orgTrigger) throws SchedulerException, ParseException {
 		/*
 		 * ========================================================= 1. group &
 		 * trigger명(=> Key) 으로 기존의 Trigger를 get
@@ -147,15 +143,15 @@ public class ScheduleServiceImpl implements ScheduleService {
 			 * 2-2. trigger.getKey() => 주어진 키로 이전 트리거를 제거하도록 스케줄러에 지시하고,
 			 * newTrigger => 새 키를 그 자리에 놓는다.
 			 */
-			scheduler.rescheduleJob(trigger.getKey(), newTrigger);
-
-			String calendarCronExpression = orgTrigger.getCalendarCronExpression();
-			if (null != calendarCronExpression || ("").equals(calendarCronExpression)) {
-				// CronCalendar 객체 생성
-				CronCalendar cronCalendar = new CronCalendar(orgTrigger.getCalendarCronExpression());
-				// Scheduler에 Calendar 추가
-				scheduler.addCalendar(orgTrigger.getCalendarName(), cronCalendar, true, true);
-			}
+//			scheduler.rescheduleJob(trigger.getKey(), newTrigger);
+//
+//			String calendarCronExpression = orgTrigger.getCalendarCronExpression();
+//			if (null != calendarCronExpression || ("").equals(calendarCronExpression)) {
+//				// CronCalendar 객체 생성
+//				CronCalendar cronCalendar = new CronCalendar(orgTrigger.getCalendarCronExpression());
+//				// Scheduler에 Calendar 추가
+//				scheduler.addCalendar(orgTrigger.getCalendarName(), cronCalendar, true, true);
+//			}
 
 			logger.debug("================= reschedule 후 schedule 정보 확인 =================");
 			// reschedule 후 현재 스케쥴 상태 확인
@@ -171,7 +167,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 	 * @throws ClassNotFoundException
 	 * @throws SchedulerException
 	 */
-	public void addJob(JobDetailsVO vo) throws ClassNotFoundException, SchedulerException {
+	public void addJob(QrtzJob vo) throws ClassNotFoundException, SchedulerException {
 		Class<?> jobClass = Class.forName(vo.getJobClassName());
 
 		// Job 파라미터
@@ -205,8 +201,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 	 * @throws SchedulerException
 	 * @throws ParseException
 	 */
-	public TriggerVO addTrigger(TriggerVO trigger) throws SchedulerException, ParseException {
-		TriggerVO vo = null;
+	public QrtzTrigger addTrigger(QrtzTrigger trigger) throws SchedulerException, ParseException {
+		QrtzTrigger vo = null;
 		
 		//이미 트리거가 존재한다면 수정
 		if(scheduler.checkExists(trigger.getTriggerKey())){
@@ -215,23 +211,13 @@ public class ScheduleServiceImpl implements ScheduleService {
 			
 			return vo;
 		}
-		
-		String calendarCronExpression = trigger.getCalendarCronExpression();
-		if (null != calendarCronExpression || ("").equals(calendarCronExpression)) {
-			// CronCalendar 객체 생성
-			CronCalendar cronCalendar = new CronCalendar(trigger.getCalendarCronExpression());
-			
-			// Scheduler에 Calendar 추가
-			scheduler.addCalendar(trigger.getCalendarName(), cronCalendar, true, true);
-		}
 
 		Trigger trgr = newTrigger(trigger);
 		
 		// Schedule the trigger
 		scheduler.scheduleJob(trgr);
-		
-		vo = qrtzTriggerToTriggerModel(trgr, scheduler.getTriggerState(trgr.getKey())
-				 , scheduler.getCalendar(trgr.getCalendarName()));
+
+		vo = qrtzTriggerToTriggerModel(trgr, scheduler.getTriggerState(trgr.getKey()));
 		
 		return vo;
 	}
@@ -240,9 +226,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 	 * 특정 Job 삭제 - 해당 Job의 trigger들도 모두 삭제 (Delete the identified Job from the
 	 * Scheduler - and anyassociated Triggers)
 	 */
-	public void deleteJob(JobDetailsVO vo) throws SchedulerException {
-
-		JobKey jobKey = vo.getJobKey();// getJobKey(vo);
+	public void deleteJob(String jobName, String jobGroup) throws SchedulerException {
+		
+		JobKey jobKey = new JobKey(jobName, jobGroup);
 		scheduler.deleteJob(jobKey);
 		logger.debug("=================== deleteJob ===================");
 		logger.debug("::::: Job Key : " + jobKey);
@@ -272,9 +258,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 	/**
 	 * 특정 Job 중지 - 해당 Job의 현재 실행중인 Trigger들도 중지
 	 */
-	public void pauseJob(JobDetailsVO vo) throws SchedulerException {
+	public void pauseJob(String jobName, String jobGroup) throws SchedulerException {
 
-		JobKey jobKey = vo.getJobKey();// getJobKey(vo);
+		JobKey jobKey = new JobKey(jobName, jobGroup);
 		scheduler.pauseJob(jobKey);
 
 		logger.debug("=================== pauseJob ===================");
@@ -289,7 +275,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 	/**
 	 * 특정 Trigger 또는 Trigger 그룹 중지 QRTZ_TRIGGERS > TRIGGER_STATE : 'PAUSED'
 	 */
-	public void pauseTrigger(TriggerVO vo) throws SchedulerException {
+	public void pauseTrigger(String triggerName, String triggerGroup) throws SchedulerException {
 
 		// if(null == vo.getTriggerGroup()) {
 		// String triggerGroup = vo.getTriggerGroup();
@@ -297,7 +283,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 		// logger.debug("=================== pauseTriggers in [" + triggerGroup
 		// + "]===================");
 		// }else {
-		TriggerKey triggerKey = vo.getTriggerKey();
+		TriggerKey triggerKey = new TriggerKey(triggerName, triggerGroup);
 		scheduler.pauseTrigger(triggerKey);
 		logger.debug("=================== pauseTrigger ===================");
 		logger.debug("::::: Trigger Group : " + triggerKey.getGroup());
@@ -319,9 +305,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 	 * 발생됨. (If any of the Job'sTrigger s missed one or more fire-times, then
 	 * the Trigger's misfireinstruction will be applied.)
 	 */
-	public void resumeJob(JobDetailsVO vo) throws SchedulerException {
+	public void resumeJob(String jobName, String jobGroup) throws SchedulerException {
 
-		JobKey jobKey = vo.getJobKey();// getJobKey(vo);
+		JobKey jobKey = new JobKey(jobName, jobGroup);
 		scheduler.resumeJob(jobKey);
 
 		logger.debug("=================== resumeJob ===================");
@@ -336,7 +322,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 	/**
 	 * 특정 Trigger 또는 Trigger 그룹 재시작
 	 */
-	public void resumeTrigger(TriggerVO vo) throws SchedulerException {
+	public void resumeTrigger(String triggerName, String triggerGroup) throws SchedulerException {
 
 		// if(null == vo.getTriggerName()) {
 		// String triggerGroup = vo.getTriggerGroup();
@@ -344,7 +330,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 		// logger.debug("=================== resumeTriggers in [" + triggerGroup
 		// + "]===================");
 		// }else {
-		TriggerKey triggerKey = vo.getTriggerKey();
+		TriggerKey triggerKey = new TriggerKey(triggerName, triggerGroup);
 		scheduler.resumeTrigger(triggerKey);
 
 		logger.debug("=================== resumeTrigger ===================");
@@ -357,8 +343,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 	/**
 	 * 특정 Trigger 삭제
 	 */
-	public void deleteTrigger(TriggerVO vo) throws SchedulerException {
-		TriggerKey triggerKey = vo.getTriggerKey();
+	public void deleteTrigger(String triggerName, String triggerGroup) throws SchedulerException {
+		TriggerKey triggerKey = new TriggerKey(triggerName, triggerGroup);
 		scheduler.unscheduleJob(triggerKey);
 
 		logger.debug("=================== deleteTrigger ===================");
@@ -382,7 +368,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 	 * @return
 	 * @throws ClassNotFoundException
 	 */
-	public JobDetail newJob(JobDetailsVO vo) throws ClassNotFoundException {
+	public JobDetail newJob(QrtzJob vo) throws ClassNotFoundException {
 		Class<?> jobClass = Class.forName(vo.getJobClassName());
 		// Job 파라미터
 		JobDataMap jobDataMap;
@@ -395,14 +381,10 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 		return JobBuilder.newJob((Class<? extends Job>) jobClass)
 				// .withIdentity(vo.getJobName(), vo.getJobGroup())
-				.withIdentity(vo.getJobKey()).requestRecovery(true) // '복구' 또는
-																	// '실패'
-																	// 상황(shutdown)이
-																	// 발생한 경우
-																	// 작업을 다시
-																	// 실행해야 하는지
-																	// 여부
-				.withDescription(vo.getDescription()).usingJobData(jobDataMap).build();
+				.withIdentity(vo.getJobKey()).requestRecovery(true) // '복구' 또는 '실패' 상황(shutdown)이 발생한 경우 작업을 다시 실행해야 하는지 여부
+				.withDescription(vo.getDescription())
+				.usingJobData(jobDataMap)
+				.build();
 	}
 
 	/**
@@ -411,40 +393,44 @@ public class ScheduleServiceImpl implements ScheduleService {
 	 * @param vo
 	 * @return
 	 */
-	public Trigger newTrigger(TriggerVO vo) {
+	public Trigger newTrigger(QrtzTrigger vo) {
 		ScheduleBuilder<?> sceduleBuilder = null;
-		String triggerType = vo.getTriggerType();
+		
+//		String triggerType = vo.getTriggerType();
 
-		if ("SIMPLE".equals(triggerType)) {
-			SimpleTriggerVO trigger = (SimpleTriggerVO) vo;
-			int repeatCount = trigger.getRepeatCount();
+//		if ("SIMPLE".equals(triggerType)) {
+//			SimpleTriggerVO trigger = (SimpleTriggerVO) vo;
+//			int repeatCount = trigger.getRepeatCount();
+//
+//			if (repeatCount > 0) {
+//				sceduleBuilder = simpleSchedule()
+//						// .withIntervalInMilliseconds(Long.parseLong("3000"))
+//						.withIntervalInMilliseconds(((SimpleTriggerVO) vo).getRepeatInterval())
+//						// .withMisfireHandlingInstructionFireNow() //TODOJ
+//						// misfire
+//						.withRepeatCount(repeatCount);
+//
+//			} else {
+//				sceduleBuilder = simpleSchedule().withIntervalInMilliseconds(((SimpleTriggerVO) vo).getRepeatInterval())
+//						.repeatForever(); // 계속 반복
+//			}
+//
+//		} else if ("CRON".equals(triggerType)) {
+//			sceduleBuilder = cronSchedule(vo.getCronExpression())
+//					.inTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
+//		}
 
-			if (repeatCount > 0) {
-				sceduleBuilder = simpleSchedule()
-						// .withIntervalInMilliseconds(Long.parseLong("3000"))
-						.withIntervalInMilliseconds(((SimpleTriggerVO) vo).getRepeatInterval())
-						// .withMisfireHandlingInstructionFireNow() //TODOJ
-						// misfire
-						.withRepeatCount(repeatCount);
-
-			} else {
-				sceduleBuilder = simpleSchedule().withIntervalInMilliseconds(((SimpleTriggerVO) vo).getRepeatInterval())
-						.repeatForever(); // 계속 반복
-			}
-
-		} else if ("CRON".equals(triggerType)) {
-			sceduleBuilder = cronSchedule(((CronTriggerVO) vo).getCronExpression())
-					.inTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
-		}
-
-		TriggerBuilder triggerBuilder = TriggerBuilder.newTrigger()
+		sceduleBuilder = cronSchedule(vo.getCronExpression())
+				.inTimeZone(vo.getTIMEZONE());
+		
+		TriggerBuilder<?> triggerBuilder = TriggerBuilder.newTrigger()
 				.withIdentity(vo.getTriggerName(), vo.getTriggerGroup())
 				.startAt(vo.getStartTime()) // 값 없을 경우 "now"
 				.withSchedule(sceduleBuilder) // 계속 반복
 				.endAt(vo.getEndTime())
 				.withDescription(vo.getDescription())
-				.withPriority(vo.getPriority())
-				.modifiedByCalendar(vo.getCalendarName());
+				.withPriority(vo.getPriority());
+//				.modifiedByCalendar(null); //예외 처리 캘린더
 
 		if ((null != vo.getJobGroup()) && (null != vo.getJobName())) {
 			triggerBuilder.forJob(vo.getJobName(), vo.getJobGroup());
@@ -463,9 +449,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 	 * @param vo
 	 * @return
 	 */
-	public Set<Trigger> newTriggers(Set<TriggerVO> triggers) {
+	public Set<Trigger> newTriggers(Set<QrtzTrigger> triggers) {
 		Set<Trigger> newTriggers = new HashSet<>();
-		for (TriggerVO trigger : triggers) {
+		for (QrtzTrigger trigger : triggers) {
 			newTriggers.add(newTrigger(trigger));
 		}
 		return newTriggers;
@@ -509,13 +495,14 @@ public class ScheduleServiceImpl implements ScheduleService {
 	/**
 	 * 해당 Trigger Detail
 	 * 
-	 * @param TriggerVO
+	 * @param QrtzTrigger
 	 * @throws SchedulerException
 	 */
-	public <T extends TriggerVO> T getTriggerDetail(TriggerVO vo) throws SchedulerException {
-
-		Trigger trgr = scheduler.getTrigger(vo.getTriggerKey());
-		TriggerState trgrState = scheduler.getTriggerState(vo.getTriggerKey());
+	public QrtzTrigger getTriggerDetail(String triggerName, String triggerGroup) throws SchedulerException {
+		TriggerKey triggerKey = new TriggerKey(triggerName, triggerGroup);
+		
+		Trigger trgr = scheduler.getTrigger(triggerKey);
+		TriggerState trgrState = scheduler.getTriggerState(triggerKey);
 		
 		logger.debug("==============================================");
 		logger.debug(">>>>> [ " + trgr.getKey() + " ] <<<<<");
@@ -530,17 +517,17 @@ public class ScheduleServiceImpl implements ScheduleService {
 		logger.debug("::::: End Time: " + trgr.getEndTime());
 		logger.debug("::::: PreviousFireTime : " + trgr.getPreviousFireTime());
 		logger.debug("::::: NextFireTime : " + trgr.getNextFireTime());
-
-		org.quartz.Calendar calendar = scheduler.getCalendar(trgr.getCalendarName());
 		logger.debug("::::: CalendarName : " + trgr.getCalendarName());
-		if (calendar instanceof CronCalendar) {
-			CronExpression cronExpression = ((CronCalendar) calendar).getCronExpression();
-			logger.debug("::::: Calendar Cron Expression : " + cronExpression);
-			logger.debug("::::: Calendar Cron Expression : " + cronExpression.toString());
-		}
+
+//		org.quartz.Calendar calendar = scheduler.getCalendar(trgr.getCalendarName());
+//		logger.debug("::::: CalendarName : " + trgr.getCalendarName());
+//		if (calendar instanceof CronCalendar) {
+//			CronExpression cronExpression = ((CronCalendar) calendar).getCronExpression();
+//			logger.debug("::::: Calendar Cron Expression : " + cronExpression.toString());
+//		}
 		logger.debug("==============================================");
 		
-		return qrtzTriggerToTriggerModel(trgr, trgrState, calendar);
+		return qrtzTriggerToTriggerModel(trgr, trgrState);
 	}
 
 	/**
@@ -563,8 +550,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 	 * @return
 	 * @throws SchedulerException
 	 */
-	public List<JobDetailsVO> getJobAll() throws SchedulerException {
-		List<JobDetailsVO> jobList = new ArrayList<JobDetailsVO>();
+	public List<QrtzJob> getJobAll() throws SchedulerException {
+		List<QrtzJob> jobList = new ArrayList<QrtzJob>();
 		for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.anyJobGroup())) {
 			logger.debug("Found job identified by: " + jobKey);
 			JobDetail qrtzJob = scheduler.getJobDetail(jobKey);
@@ -580,8 +567,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 	 * @return
 	 * @throws SchedulerException
 	 */
-	public List<JobDetailsVO> getJobsByGroup(String JobGroup) throws SchedulerException {
-		List<JobDetailsVO> jobList = new ArrayList<JobDetailsVO>();
+	public List<QrtzJob> getJobsByGroup(String JobGroup) throws SchedulerException {
+		List<QrtzJob> jobList = new ArrayList<QrtzJob>();
 		for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.groupEquals(JobGroup))) {
 			logger.debug("Found job identified by: " + jobKey);
 			JobDetail qrtzJob = scheduler.getJobDetail(jobKey);
@@ -597,20 +584,21 @@ public class ScheduleServiceImpl implements ScheduleService {
 	 * @return
 	 * @throws SchedulerException
 	 */
-	public List<TriggerVO> getTriggersOfJob(JobDetailsVO vo) throws SchedulerException {
-		List<TriggerVO> triggerList = new ArrayList<TriggerVO>();
-		for (Trigger qrtzTrigger : scheduler.getTriggersOfJob(vo.getJobKey())) {
+	public List<QrtzTrigger> getTriggersOfJob(String jobName, String jobGroup) throws SchedulerException {
+		List<QrtzTrigger> triggerList = new ArrayList<QrtzTrigger>();
+		for (Trigger qrtzTrigger : scheduler.getTriggersOfJob(new JobKey(jobName, jobGroup))) {
 			
 			TriggerState trgrState = scheduler.getTriggerState(qrtzTrigger.getKey());
-			org.quartz.Calendar calendar = scheduler.getCalendar(qrtzTrigger.getCalendarName());
+//			org.quartz.Calendar calendar = scheduler.getCalendar(qrtzTrigger.getCalendarName());
 			
-			triggerList.add(qrtzTriggerToTriggerModel(qrtzTrigger, trgrState, calendar));
+			triggerList.add(qrtzTriggerToTriggerModel(qrtzTrigger, trgrState));
 		}
 		return triggerList;
 	}
 
-	public JobDetailsVO qrtzJobToJobModel(JobDetail qrtzJob) {
-		JobDetailsVO job = new JobDetailsVO();
+	public QrtzJob qrtzJobToJobModel(JobDetail qrtzJob) {
+		
+		QrtzJob job = new QrtzJob();
 		job.setJobGroup(qrtzJob.getKey().getGroup());
 		job.setJobName(qrtzJob.getKey().getName());
 		job.setJobClassName(qrtzJob.getJobClass().getName());
@@ -618,48 +606,28 @@ public class ScheduleServiceImpl implements ScheduleService {
 		return job;
 	}
 
-	public <T extends TriggerVO> T qrtzTriggerToTriggerModel(Trigger trgr, TriggerState trgrState, org.quartz.Calendar calendar) throws SchedulerException {
-		CronTriggerVO trigger = null;
-
-		if (trgr instanceof CronTrigger) {
-			trigger = new CronTriggerVO();
-			
-			if (trgr instanceof CronTrigger) {
-				CronTrigger cronTrigger = (CronTrigger) trgr;
-				trigger.setCronExpression(cronTrigger.getCronExpression());
-			}
-			
-		} 
-//		else if (trgr instanceof SimpleTrigger) {
-//			trigger = new SimpleTriggerVO();
-//		}
+	public QrtzTrigger qrtzTriggerToTriggerModel(Trigger trigger, TriggerState triggerState) throws SchedulerException {
+		QrtzTrigger qrtzTrigger = new QrtzTrigger();
 		
-		trigger.setTriggerName(trgr.getJobKey().getName());
-		trigger.setTriggerGroup(trgr.getJobKey().getGroup());
-		trigger.setJobName(trgr.getJobKey().getName());
-		trigger.setJobGroup(trgr.getJobKey().getGroup());
-		trigger.setDescription(trgr.getDescription());
-		trigger.setPriority(trgr.getPriority());
-		trigger.setTriggerState(trgrState.toString());
-		trigger.setStartTime(trgr.getStartTime());
-		trigger.setEndTime(trgr.getEndTime());
-		trigger.setNextFireTime(trgr.getNextFireTime());
-		trigger.setPrevFireTime(trgr.getPreviousFireTime());
-		trigger.setCalendarName(trgr.getCalendarName());
-		trigger.setMisfireInstr(Integer.toString(trgr.getMisfireInstruction()));
+		qrtzTrigger.setTriggerName(trigger.getJobKey().getName());
+		qrtzTrigger.setTriggerGroup(trigger.getJobKey().getGroup());
+		qrtzTrigger.setJobName(trigger.getJobKey().getName());
+		qrtzTrigger.setJobGroup(trigger.getJobKey().getGroup());
+		qrtzTrigger.setDescription(trigger.getDescription());
+		qrtzTrigger.setPriority(trigger.getPriority());
+		qrtzTrigger.setTriggerState(triggerState.toString());
+		qrtzTrigger.setStartTime(trigger.getStartTime());
+		qrtzTrigger.setEndTime(trigger.getEndTime());
+		qrtzTrigger.setNextFireTime(trigger.getNextFireTime());
+		qrtzTrigger.setPrevFireTime(trigger.getPreviousFireTime());
+		qrtzTrigger.setMisfireInstr(Integer.toString(trigger.getMisfireInstruction()));
+		qrtzTrigger.setCalendarName(trigger.getCalendarName());
 		
-		if (calendar instanceof CronCalendar) {
-			CronExpression cronExpression = ((CronCalendar) calendar).getCronExpression();
-			trigger.setCalendarCronExpression(cronExpression.toString());
-		}
-
-		return (T) trigger;
+		return qrtzTrigger;
 
 	}
 	
-	public TriggerVO updateTrigger(TriggerVO orgTrigger) throws SchedulerException {
-		TriggerVO vo = null;
-		
+	public QrtzTrigger updateTrigger(QrtzTrigger orgTrigger) throws SchedulerException {
 		//기존 트리거
 		Trigger oldTrigger = (Trigger) scheduler.getTrigger(orgTrigger.getTriggerKey());
 		
@@ -669,9 +637,67 @@ public class ScheduleServiceImpl implements ScheduleService {
 		// tell the scheduler to remove the old trigger with the given key, and put the new one in its place
 		scheduler.rescheduleJob(oldTrigger.getKey(), newTrigger);
 		
-		vo = qrtzTriggerToTriggerModel(newTrigger, scheduler.getTriggerState(newTrigger.getKey())
-												 , scheduler.getCalendar(newTrigger.getCalendarName()));
-		return vo;
+		QrtzTrigger qrtzTrigger = qrtzTriggerToTriggerModel(newTrigger, scheduler.getTriggerState(newTrigger.getKey()));
+		
+		return qrtzTrigger;
 		
 	}
+
+	public List<QrtzCalendar> getCalendarList() throws SchedulerException {
+		List<QrtzCalendar> calendarList = new ArrayList<QrtzCalendar>();
+		
+		for (String calendarNames : scheduler.getCalendarNames()) {
+			calendarList.add(qrtzCalendarToCalendarModel(calendarNames, (CronCalendar)scheduler.getCalendar(calendarNames)));
+		}
+		
+		return calendarList;
+		
+	}
+	
+	public QrtzCalendar qrtzCalendarToCalendarModel(String calendarNames, CronCalendar qrtzCalendar) throws SchedulerException {
+		QrtzCalendar calendar = new QrtzCalendar();
+		
+		calendar.setCalendarName(calendarNames);
+		calendar.setCalendarCronExpression(qrtzCalendar.getCronExpression().toString());
+		calendar.setCalendarDescription(qrtzCalendar.getDescription());
+
+		return calendar;
+
+	}
+
+	public void addCalendar(QrtzCalendar calendarVO) throws ParseException, SchedulerException {
+		CronCalendar cronCalendar = new CronCalendar(calendarVO.getCalendarCronExpression());
+		cronCalendar.setDescription(calendarVO.getCalendarDescription());
+		cronCalendar.setTimeZone(calendarVO.getTIMEZONE());
+		
+		scheduler.addCalendar(calendarVO.getCalendarName(), cronCalendar, true, true);
+	}
+	
+	public void deleteCalendar(String name) throws SchedulerException{
+		scheduler.deleteCalendar(name);
+		
+	}
+	
+	public QrtzCalendar getCalendarDetail(String name) throws SchedulerException {
+		QrtzCalendar calendarVO = qrtzCalendarToCalendarModel(name, (CronCalendar)scheduler.getCalendar(name));
+		return calendarVO;
+	}
+	
+	public void addCalendarToTrigger(String calendarName, String triggerName, String triggerGroup) throws SchedulerException {
+		TriggerKey triggerKey = new TriggerKey(triggerName, triggerGroup);
+		Trigger trigger = scheduler.getTrigger(triggerKey);
+		Trigger newTrigger = trigger.getTriggerBuilder().modifiedByCalendar(calendarName).build();
+		
+		scheduler.rescheduleJob(triggerKey, newTrigger);
+	}
+	
+	public void removeCalendarFromTrigger(String triggerName, String triggerGroup) throws SchedulerException {
+		TriggerKey triggerKey = new TriggerKey(triggerName, triggerGroup);
+		Trigger trigger = scheduler.getTrigger(triggerKey);
+		Trigger newTrigger = trigger.getTriggerBuilder().modifiedByCalendar(null).build();
+		
+		scheduler.rescheduleJob(triggerKey, newTrigger);
+	}
+	
+
 }

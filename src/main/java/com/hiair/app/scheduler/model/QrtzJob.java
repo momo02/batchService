@@ -1,4 +1,4 @@
-package com.hiair.app.scheduler.vo;
+package com.hiair.app.scheduler.model;
 
 import org.quartz.JobDataMap;
 import org.quartz.JobKey;
@@ -8,37 +8,37 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL) 
-public class JobDetailsVO {
+public class QrtzJob {
 	//작업 클래스 BASE PACKAGE 명
-	public static final String JOB_BASE_PACKAGE = "com.hiair.app.schedule.job.";
+	public static final String JOB_BASE_PACKAGE = "com.hiair.app.scheduler.job.";
 	
-	@ApiModelProperty(notes = "스케줄명")
-	private String schedName;
-	
-	@ApiModelProperty(notes = "작업명")
+	@ApiModelProperty(notes = "작업 명", required = true, example = "job1")
 	private String jobName;
 	
-	@ApiModelProperty(notes = "작업그룹")
+	@ApiModelProperty(notes = "작업 그룹명", required = true, example ="IBE")
 	private String jobGroup;
 	
-	@ApiModelProperty(notes = "작업설명")
+	@ApiModelProperty(notes = "작업 설명", example = "쿼츠 작업 : job1")
 	private String description;
+	
+	@ApiModelProperty(notes = "작업 클래스명", required = true, example = "Job1")
 	private String jobClassName;
+	
+	@ApiModelProperty(hidden = true) 
 	private String isDurable;
+	@ApiModelProperty(hidden = true)
 	private String isNonconcurrent;
+	@ApiModelProperty(hidden = true)
 	private String isUpdateData;
+	@ApiModelProperty(hidden = true)
 	private String requestsRecovery;
 	
-	@ApiModelProperty(notes = "작업 데이터")
+	@ApiModelProperty(notes = "작업 데이터", hidden = true)
 	private JobDataMap jobDataMap;
+	
+	@ApiModelProperty(hidden = true)
 	private JobKey jobKey;
 	
-	public String getSchedName() {
-		return schedName;
-	}
-	public void setSchedName(String schedName) {
-		this.schedName = schedName;
-	}
 	public String getJobName() {
 		return jobName;
 	}
@@ -96,12 +96,15 @@ public class JobDetailsVO {
 	public JobKey getJobKey() {
 		return JobKey.jobKey(this.jobName, this.jobGroup);
 	}
+	
 	@Override
 	public String toString() {
-		return "JobDetailsVO [schedName=" + schedName + ", jobName=" + jobName + ", jobGroup=" + jobGroup
-				+ ", description=" + description + ", jobClassName=" + jobClassName + ", isDurable=" + isDurable
-				+ ", isNonconcurrent=" + isNonconcurrent + ", isUpdateData=" + isUpdateData + ", requestsRecovery="
-				+ requestsRecovery + ", jobDataMap=" + jobDataMap + ", jobKey=" + jobKey + "]";
+		return "JobDetailsVO [jobName=" + jobName + ", jobGroup=" + jobGroup + ", description=" + description
+				+ ", jobClassName=" + jobClassName + ", isDurable=" + isDurable + ", isNonconcurrent=" + isNonconcurrent
+				+ ", isUpdateData=" + isUpdateData + ", requestsRecovery=" + requestsRecovery + ", jobDataMap="
+				+ jobDataMap + ", jobKey=" + jobKey + "]";
 	}
 
+	
+	
 }
