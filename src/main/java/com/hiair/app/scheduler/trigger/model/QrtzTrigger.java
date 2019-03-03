@@ -1,9 +1,7 @@
-package com.hiair.app.scheduler.model;
+package com.hiair.app.scheduler.trigger.model;
 
 import java.util.Date;
-import java.util.TimeZone;
 
-import org.quartz.JobDataMap;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 
@@ -33,13 +31,13 @@ public class QrtzTrigger {
 	@ApiModelProperty(hidden = true)
 	private String triggerState;
 
-	@ApiModelProperty(notes = "트리거 타입, Default = CRON", required = true, example = "cron")
-	private String triggerType = "CRON";
+//	@ApiModelProperty(notes = "트리거 타입, Default = CRON", required = true, example = "cron")
+//	private String triggerType = "CRON";
 	@ApiModelProperty(notes = "크론 표현식", required = true, example = "0/30 * * * * ?")
 	private String cronExpression;
 	
-	@ApiModelProperty(notes = "타임 존 : ASIA/SEOUL", hidden = true)
-	private final TimeZone TIMEZONE = TimeZone.getTimeZone("Asia/Seoul");
+//	@ApiModelProperty(notes = "타임 존 : ASIA/SEOUL", hidden = true)
+//	private final TimeZone TIMEZONE = TimeZone.getTimeZone("Asia/Seoul");
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss", timezone = "Asia/Seoul")
 	@ApiModelProperty(notes = "시작 일시 : yyyy-MM-dd hh:mm:ss, Default = new Date()")
@@ -62,8 +60,14 @@ public class QrtzTrigger {
 	@ApiModelProperty(hidden = true)
 	private String calendarName;
 	
-	@ApiModelProperty(notes = "작업 데이터", hidden = true)
-	private JobDataMap jobDataMap;
+	@ApiModelProperty(hidden = true)
+	private boolean isTargetCalendar;
+	
+	@ApiModelProperty(hidden = true)
+	private TriggerKey triggerKey;
+	
+//	@ApiModelProperty(notes = "작업 데이터", hidden = true)
+//	private JobDataMap jobDataMap;
 
 	public String getTriggerName() {
 		return triggerName;
@@ -121,13 +125,13 @@ public class QrtzTrigger {
 		this.triggerState = triggerState;
 	}
 
-	public String getTriggerType() {
-		return triggerType;
-	}
-
-	public void setTriggerType(String triggerType) {
-		this.triggerType = triggerType;
-	}
+//	public String getTriggerType() {
+//		return triggerType;
+//	}
+//
+//	public void setTriggerType(String triggerType) {
+//		this.triggerType = triggerType;
+//	}
 
 	public String getCronExpression() {
 		return cronExpression;
@@ -177,13 +181,13 @@ public class QrtzTrigger {
 		this.misfireInstr = misfireInstr;
 	}
 
-	public JobDataMap getJobDataMap() {
-		return jobDataMap;
-	}
-
-	public void setJobDataMap(JobDataMap jobDataMap) {
-		this.jobDataMap = jobDataMap;
-	}
+//	public JobDataMap getJobDataMap() {
+//		return jobDataMap;
+//	}
+//
+//	public void setJobDataMap(JobDataMap jobDataMap) {
+//		this.jobDataMap = jobDataMap;
+//	}
 	
 	public TriggerKey getTriggerKey() {
 		return TriggerKey.triggerKey(this.triggerName, this.triggerGroup);
@@ -197,18 +201,22 @@ public class QrtzTrigger {
 		this.calendarName = calendarName;
 	}
 
-	public TimeZone getTIMEZONE() {
-		return TIMEZONE;
+	public boolean isTargetCalendar() {
+		return isTargetCalendar;
+	}
+
+	public void setTargetCalendar(boolean isTargetCalendar) {
+		this.isTargetCalendar = isTargetCalendar;
 	}
 
 	@Override
 	public String toString() {
-		return "TriggerVO [triggerName=" + triggerName + ", triggerGroup=" + triggerGroup + ", jobName=" + jobName
+		return "QrtzTrigger [triggerName=" + triggerName + ", triggerGroup=" + triggerGroup + ", jobName=" + jobName
 				+ ", jobGroup=" + jobGroup + ", description=" + description + ", priority=" + priority
-				+ ", triggerState=" + triggerState + ", triggerType=" + triggerType + ", cronExpression="
-				+ cronExpression + ", TIMEZONE=" + TIMEZONE + ", startTime=" + startTime + ", endTime=" + endTime
-				+ ", nextFireTime=" + nextFireTime + ", prevFireTime=" + prevFireTime + ", misfireInstr=" + misfireInstr
-				+ ", calendarName=" + calendarName + ", jobDataMap=" + jobDataMap + "]";
+				+ ", triggerState=" + triggerState + ", cronExpression=" + cronExpression + ", startTime=" + startTime
+				+ ", endTime=" + endTime + ", nextFireTime=" + nextFireTime + ", prevFireTime=" + prevFireTime
+				+ ", misfireInstr=" + misfireInstr + ", calendarName=" + calendarName + ", isTargetCalendar="
+				+ isTargetCalendar + ", triggerKey=" + triggerKey + "]";
 	}
 
 	

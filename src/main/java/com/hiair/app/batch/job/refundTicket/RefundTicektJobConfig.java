@@ -57,7 +57,7 @@ public class RefundTicektJobConfig {
 	  public Job sampleJob1() {
 		  return jobBuilderFactory.get(JOB_NM)
 	                .start(step_main())
-	                .build();
+	               .build();
 //		              	.on("COMPLETED")
 ////		                .to(writeQueueHistory())
 ////		                .next(afterSuccess())
@@ -79,36 +79,23 @@ public class RefundTicektJobConfig {
 //		              //.end()
 //		            .end()
 //		            .build();
-		                
 	  }
 	  
 	  //작업 큐에서 데이터 read & write (QUEUE_DATA)
 	  @Bean(name=STEP_NM)
 	  public Step step_main() {
 	      return stepBuilderFactory.get(STEP_NM)
-	              .chunk(100)
+	              .chunk(10) //한번에 처리될 트랜잭션 단위(commit interval). 
 	              .reader(reader)
 	    		  .processor((ItemProcessor<? super Object, ? extends Object>) processor)
 	    		  .writer((ItemWriter<? super Object>) writer)
 	              .taskExecutor(taskExecutor)
-	              .throttleLimit(5) //maximium number of concurrent tasklet executions allowed
+	              .throttleLimit(10) //스레드 풀에서 사용 가능한 스레드 수에 관계없이,
+	              					 //해당 태스크릿에서는 throttleLimit 갯수의 스레드만 사용.(maximium number of concurrent tasklet executions allowed
+	              					 //DEFAULT_THROTTLE_LIMIT = 4	
 	              .build();
 	  }
 	  
-	  
-//	  //작업 큐 이력 write (QUEUE_HISTORY)
-//	  @Bean(name=STEP_NM2) //test..
-//	  public Step writeQueueHistory() {
-//	      return stepBuilderFactory.get(STEP_NM2)
-//	    		  .chunk(100)
-//	              //.reader(reader)
-//	    		  //.processor((ItemProcessor<? super Object, ? extends Object>) processor)
-//	    		  .writer((ItemWriter<? super Object>) writer2)
-//	              .taskExecutor(taskExecutor)
-//	              //.throttleLimit(5) //maximium number of concurrent tasklet executions allowed
-//	              .build();
-//	  }
-//	  
 	  
 	  @Bean(name=STEP_NM3)
 	  public Step afterSuccess() {

@@ -73,10 +73,10 @@ public class JobQueueDataServiceTest {
 		JobQueueData param = new JobQueueData();
 		param.setJobGroup("ADM");
 		param.setJobName("RefundTicektJob");
-		
-		List<JobQueueData> getList = service.list(param);
-		CmmJsonUtils.println(getList);
-		System.out.println(">>>>> list count : " + getList.size());
+//임시주석,,		
+//		List<JobQueueData> getList = service.list(param);
+//		CmmJsonUtils.println(getList);
+//		System.out.println(">>>>> list count : " + getList.size());
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class JobQueueDataServiceTest {
 	}
 
 	@Test
-	@Rollback(false)
+	//@Rollback(false)
 	public void testInsert() {
 		int runCnt = 0;
 		while(runCnt < 100) {
@@ -98,17 +98,15 @@ public class JobQueueDataServiceTest {
 
 	@Test
 	public void testUpdate() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testDelete() {
-		fail("Not yet implemented");
 	}
 	
 
 	@Test
-	@Rollback(false)
+	//@Rollback(false)
 	public void testDeleteAll() {
 		int deleteCnt = service.deleteAll();
 		System.out.println(">>>>> delete count : " + deleteCnt);

@@ -1,6 +1,4 @@
-package com.hiair.app.scheduler.model;
-
-import java.util.TimeZone;
+package com.hiair.app.scheduler.calendar.model;
 
 import io.swagger.annotations.ApiModelProperty;
 
@@ -15,8 +13,8 @@ public class QrtzCalendar {
 	@ApiModelProperty(notes = "예외 일자 : 설명", example = "0분 부터 10분까지 예외 시간처리")
 	private String calendarDescription;
 	
-	@ApiModelProperty(notes = "타임 존 : ASIA/SEOUL", hidden = true)
-	private final TimeZone TIMEZONE = TimeZone.getTimeZone("Asia/Seoul");
+//	@ApiModelProperty(notes = "타임 존 : ASIA/SEOUL", hidden = true)
+//	private final TimeZone TIMEZONE = TimeZone.getTimeZone("Asia/Seoul");
 	
 	public String getCalendarName() {
 		return calendarName;
@@ -36,14 +34,11 @@ public class QrtzCalendar {
 	public void setCalendarDescription(String calendarDescription) {
 		this.calendarDescription = calendarDescription;
 	}
-	public TimeZone getTIMEZONE() {
-		return TIMEZONE;
-	}
 	
 	@Override
 	public String toString() {
-		return "CalendarVO [calendarName=" + calendarName + ", calendarCronExpression=" + calendarCronExpression
-				+ ", calendarDescription=" + calendarDescription + ", TIMEZONE=" + TIMEZONE + "]";
+		return "QrtzCalendar [calendarName=" + calendarName + ", calendarCronExpression=" + calendarCronExpression
+				+ ", calendarDescription=" + calendarDescription + "]";
 	}
 	
 }

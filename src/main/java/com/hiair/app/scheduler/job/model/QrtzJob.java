@@ -1,4 +1,4 @@
-package com.hiair.app.scheduler.model;
+package com.hiair.app.scheduler.job.model;
 
 import org.quartz.JobDataMap;
 import org.quartz.JobKey;
@@ -10,7 +10,7 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL) 
 public class QrtzJob {
 	//작업 클래스 BASE PACKAGE 명
-	public static final String JOB_BASE_PACKAGE = "com.hiair.app.scheduler.job.";
+//	public static final String JOB_BASE_PACKAGE = "com.hiair.app.scheduler.job.";
 	
 	@ApiModelProperty(notes = "작업 명", required = true, example = "job1")
 	private String jobName;
@@ -21,8 +21,8 @@ public class QrtzJob {
 	@ApiModelProperty(notes = "작업 설명", example = "쿼츠 작업 : job1")
 	private String description;
 	
-	@ApiModelProperty(notes = "작업 클래스명", required = true, example = "Job1")
-	private String jobClassName;
+//	@ApiModelProperty(notes = "작업 클래스명", required = true, example = "Job1")
+//	private String jobClassName;
 	
 	@ApiModelProperty(hidden = true) 
 	private String isDurable;
@@ -36,8 +36,8 @@ public class QrtzJob {
 	@ApiModelProperty(notes = "작업 데이터", hidden = true)
 	private JobDataMap jobDataMap;
 	
-	@ApiModelProperty(hidden = true)
-	private JobKey jobKey;
+//	@ApiModelProperty(hidden = true)
+//	private JobKey jobKey;
 	
 	public String getJobName() {
 		return jobName;
@@ -57,12 +57,12 @@ public class QrtzJob {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public String getJobClassName() {
-		return JOB_BASE_PACKAGE + jobClassName;
-	}
-	public void setJobClassName(String jobClassName) {
-		this.jobClassName = jobClassName;
-	}
+//	public String getJobClassName() {
+//		return JOB_BASE_PACKAGE + jobClassName;
+//	}
+//	public void setJobClassName(String jobClassName) {
+//		this.jobClassName = jobClassName;
+//	}
 	public String getIsDurable() {
 		return isDurable;
 	}
@@ -93,17 +93,17 @@ public class QrtzJob {
 	public void setJobDataMap(JobDataMap jobDataMap) {
 		this.jobDataMap = jobDataMap;
 	}
-	public JobKey getJobKey() {
-		return JobKey.jobKey(this.jobName, this.jobGroup);
-	}
+//	public JobKey getJobKey() {
+//		return JobKey.jobKey(this.jobName, this.jobGroup);
+//	}
 	
 	@Override
 	public String toString() {
-		return "JobDetailsVO [jobName=" + jobName + ", jobGroup=" + jobGroup + ", description=" + description
-				+ ", jobClassName=" + jobClassName + ", isDurable=" + isDurable + ", isNonconcurrent=" + isNonconcurrent
-				+ ", isUpdateData=" + isUpdateData + ", requestsRecovery=" + requestsRecovery + ", jobDataMap="
-				+ jobDataMap + ", jobKey=" + jobKey + "]";
+		return "QrtzJob [jobName=" + jobName + ", jobGroup=" + jobGroup + ", description=" + description
+				+ ", isDurable=" + isDurable + ", isNonconcurrent=" + isNonconcurrent + ", isUpdateData=" + isUpdateData
+				+ ", requestsRecovery=" + requestsRecovery + ", jobDataMap=" + jobDataMap + "]";
 	}
+	
 
 	
 	

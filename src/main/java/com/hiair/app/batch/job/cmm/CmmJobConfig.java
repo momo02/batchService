@@ -27,19 +27,22 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 public class CmmJobConfig {
 	  
 	  private static final Logger logger = LoggerFactory.getLogger(CmmJobConfig.class);
-	  private static final String READ_QUERY = "com.hiair.app.queue.data.service.JobQueueDataMapper.list";
-	  private static final String WRITE_QUERY = "com.hiair.app.queue.data.service.JobQueueDataMapper.update";
-	  private static final String WRITE_QUERY2 = "com.hiair.app.queue.history.service.JobQueueHistoryMapper.insert";
+	  
+	  private static final String SELECT_QUEUE_DATA = "com.hiair.app.queue.data.service.JobQueueDataMapper.list";
+	  private static final String UPDATE_QUEUE_DATA = "com.hiair.app.queue.data.service.JobQueueDataMapper.update";
+	  private static final String INSERT_QUEUE_HISTORY = "com.hiair.app.queue.history.service.JobQueueHistoryMapper.insert";
 	  
 	  @Autowired
 	  private SqlSessionFactory sqlSessionFactory;
 	  
 	  @Bean
 	  @StepScope
-	  public TaskExecutor taskExecutor() {
+	  public TaskExecutor taskExecutor(@Value("#{jobParameters['threadCount']}") int threadCount) {
+		  
+		  System.err.println(">>>>>> threadCount : " + threadCount); 
 		  ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-		  taskExecutor.setCorePoolSize(1);
-		  taskExecutor.setMaxPoolSize(10);
+		  taskExecutor.setCorePoolSize(threadCount);
+		  taskExecutor.setMaxPoolSize(Integer.MAX_VALUE); //TODOJ Max Thread Pool Size는 몇으로 할지..
 		  taskExecutor.afterPropertiesSet();
 		  return taskExecutor;
 	  }
@@ -54,8 +57,7 @@ public class CmmJobConfig {
 //		  return map;
 //	  }
 	  
-	  
-	  @Bean(name="queueReader")
+	  @Bean
 	  @StepScope //Step의 실행시점에 컴포넌트를 spring baen으로 생성. 
 	  // 즉 singleton이 아니라, 각각의 step에서 별도의 ItemReader가 생성된다.
 	  // (job에서 해당 reader를 사용하지 않을 경우에도 무조건 생성)
@@ -66,8 +68,12 @@ public class CmmJobConfig {
 			  ) {
 		  MyBatisPagingItemReader<?> itemReader = new MyBatisPagingItemReader<Object>();
 		  itemReader.setSqlSessionFactory((SqlSessionFactory) sqlSessionFactory);
-		  itemReader.setQueryId(READ_QUERY);
-		  itemReader.setPageSize(10);
+		  itemReader.setQueryId(SELECT_QUEUE_DATA);
+		  itemReader.setPageSize(10); // 한번에 조회할 Item의 양, Page 단위로 끊어서 조회
+		  //cf.PageSize가 10이고, ChunkSize가 50이라면 ItemReader에서 Page 조회가 5번 일어나면 1번 의 트랜잭션이 발생하여 Chunk가 처리
+		  //한번의 트랜잭션 처리를 위해 5번의 쿼리 조회가 발생하기 때문에 성능상 이슈가 발생할 수 있음.
+		  //Setting a fairly large page size and using a commit interval that matches the page size should provide better performance. 
+		  //(상당히 큰 페이지 크기를 설정하고 페이지 크기와 일치하는 커미트 간격을 사용하면 성능이 향상됨)
 		  
 		  Map<String, Object> map = new HashMap<>();
 		  map.put("jobGroup", jobGroup);
@@ -83,45 +89,6 @@ public class CmmJobConfig {
 		  return itemReader;
 	  }
 	  
-//	  @Bean(name="queueWriter")
-//	  @StepScope
-//	  public ItemWriter<?> writer(/*@Value("#{jobParameters['jobName']}") String jobName,*//*확인용*/
-//			  					  /*@Value("#{jobParameters['runDate']}") Date runDate,*//*확인용*/	
-//			  					  /*@Value("#{jobParameters['writeQuery']}") String query*/) {
-//		  MyBatisBatchItemWriter<?> itemWriter = new MyBatisBatchItemWriter<Object>();
-//		  itemWriter.setSqlSessionFactory((SqlSessionFactory) sqlSessionFactory);
-//		  
-//		  logger.debug("=====================================================");
-//		  logger.debug("write!!!!");
-//		  //logger.debug("jobName    >>>>>> " + jobName);
-//		  //logger.debug("runDate    >>>>>> " + runDate);
-//		  //logger.debug("writeQuery >>>>>> " + query);
-//		  logger.debug("=====================================================");
-//	
-//		  itemWriter.setStatementId(WRITE_QUERY);
-//		  return itemWriter;
-//	  }
-//	  
-//	  
-//	  @Bean(name="queueHistoryWriter")
-//	  @StepScope
-//	  public ItemWriter<?> writer2(/*@Value("#{jobParameters['jobName']}") String jobName,*//*확인용*/
-//			  					  /*@Value("#{jobParameters['runDate']}") Date runDate,*//*확인용*/	
-//			  					  /*@Value("#{jobParameters['writeQuery']}") String query*/) {
-//		  MyBatisBatchItemWriter<?> itemWriter = new MyBatisBatchItemWriter<Object>();
-//		  itemWriter.setSqlSessionFactory((SqlSessionFactory) sqlSessionFactory);
-//		  
-//		  logger.debug("=====================================================");
-//		  logger.debug("write!!!!");
-//		  //logger.debug("jobName    >>>>>> " + jobName);
-//		  //logger.debug("runDate    >>>>>> " + runDate);
-//		  //logger.debug("writeQuery >>>>>> " + query);
-//		  logger.debug("=====================================================");
-//	
-//		  itemWriter.setStatementId(WRITE_QUERY2);
-//		  return itemWriter;
-//	  }
-	  
 	  @Bean
 	  @StepScope
 	  public ItemWriter<?> writer2() {
@@ -130,23 +97,22 @@ public class CmmJobConfig {
 		  
 		  MyBatisBatchItemWriter<Object> itemWriter1 = new MyBatisBatchItemWriter<Object>();
 		  itemWriter1.setSqlSessionFactory((SqlSessionFactory) sqlSessionFactory);
-		  itemWriter1.setStatementId(WRITE_QUERY);
+		  itemWriter1.setStatementId(UPDATE_QUEUE_DATA);
 		  itemWriter1.setAssertUpdates(false); //This will prevent Spring Batch from verifying that only one update was made per item.
 		  
 		  MyBatisBatchItemWriter<Object> itemWriter2 = new MyBatisBatchItemWriter<Object>();
 		  itemWriter2.setSqlSessionFactory((SqlSessionFactory) sqlSessionFactory);
-		  itemWriter2.setStatementId(WRITE_QUERY2);
+		  itemWriter2.setStatementId(INSERT_QUEUE_HISTORY);
 		  itemWriter1.setAssertUpdates(false);
 		  
 		  List<ItemWriter<? super Object>> mWriter = new ArrayList<ItemWriter<? super Object>>();
-		  mWriter.add((ItemWriter<? super Object>) itemWriter1); // **Comment this line and the code works fine**
+		  mWriter.add((ItemWriter<? super Object>) itemWriter1); 
 		  mWriter.add((ItemWriter<? super Object>) itemWriter2);
 		  
 		  cWriter.setDelegates(mWriter);
 		  
 		  return cWriter;
 	  }
-	  
 	  
 	  @Bean
 	  @StepScope

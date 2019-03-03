@@ -98,4 +98,12 @@ public class JobQueueGroup {
 	public void setModifiedDate(String modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
+
+	@Override
+	public String toString() {
+		return "JobQueueGroup [jobGroup=" + jobGroup + ", jobName=" + jobName + ", batchJobName=" + batchJobName
+				+ ", retryCount=" + retryCount + ", produceUserId=" + produceUserId + ", threadCount=" + threadCount
+				+ ", queueSaveFlag=" + queueSaveFlag + ", jobData=" + jobData + ", produceDate=" + produceDate
+				+ ", modifiedUserId=" + modifiedUserId + ", modifiedDate=" + modifiedDate + "]";
+	}
 }

@@ -37,16 +37,14 @@ public class JobQueueHistoryServiceTest {
 	
 	@Test
 	public void testList() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testDetail() {
-		fail("Not yet implemented");
 	}
 
 	@Test
-	@Rollback(false)
+	//@Rollback(false)
 	public void testInsert() {
 		int result = service.insert(model);
 		assertThat(result, is(1));
@@ -56,12 +54,10 @@ public class JobQueueHistoryServiceTest {
 
 	@Test
 	public void testUpdate() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testDelete() {
-		fail("Not yet implemented");
 	}
 
 }

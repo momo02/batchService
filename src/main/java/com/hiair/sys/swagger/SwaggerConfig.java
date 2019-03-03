@@ -49,7 +49,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
 				.select()
 				// 현재 RequestMapping으로 할당된 모든 URL 리스트를 추출
 				.apis(RequestHandlerSelectors.any()) 
-				.paths(PathSelectors.ant("/rest/schedule/**")) // 그중 /schedule/** 인 URL들만 필터링
+				.paths(PathSelectors.ant("/rest/scheduler/**")) // 그중 /schedule/** 인 URL들만 필터링
 				.build()
 				.apiInfo(apiInfo())
 				//기본 번황 Message 설정

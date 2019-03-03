@@ -21,6 +21,8 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.hiair.app.queue.data.model.JobQueueData;
+import com.hiair.app.queue.data.service.JobQueueDataService;
 import com.hiair.app.queue.group.model.JobQueueGroup;
 import com.hiair.app.queue.group.service.JobQueueGroupService;
 
@@ -39,36 +41,50 @@ public class QuartzJobLauncher implements Job {
 	private JobLauncher jobLauncher;
 	@Autowired
 	private JobQueueGroupService jobQueueGroupService;
+	@Autowired
+	private JobQueueDataService jobQueueDataService;
 	
 	@Override
 	public void execute(JobExecutionContext context) {
 		
 		try {
-		
-		logger.debug("=============== main job execute ===============");
-		logger.debug("jobLocator >>>>>" + jobLocator);
-		logger.debug("jobLauncher >>>>>" + jobLauncher);
-		
-	//quartz job Data로 부터 파라미터를 가져오는 방식. 사용 X
-	//	Map<String, Object> jobDataMap = context.getMergedJobDataMap();
-	//	String jobName = (String) jobDataMap.get(JOB_NAME);
-	//	logger.debug("jobName >>>>>" + jobName);
-	//	JobParameters jobParameters = getJobParametersFromJobMap(jobDataMap);
-		
-	//	System.out.println(jobLocator.getJob(jobName));
-	//	System.out.println(jobParameters);
-	//	
-	//	jobLauncher.run(jobLocator.getJob(jobName), jobParameters);
-		
-		
-		//QUEUE_GROUP 테이블 정보를 통해 jobParameter를 생성
-		JobParameters jobParameters = getJobParametersFromQueueGroupInfo(context.getJobDetail());
-	    logger.debug(">>>>> jobParameters : " + jobParameters);
-		
-	    String batchJobName = jobParameters.getString("jobName");
-	    System.out.println(jobLocator.getJob(batchJobName));
-	    jobLauncher.run(jobLocator.getJob(batchJobName), jobParameters);
-		
+
+			logger.debug("=============== main job execute ===============");
+			logger.debug(">>>>> jobLocator : " + jobLocator);
+			logger.debug(">>>>> jobLauncher : " + jobLauncher);
+
+			// 작업 큐 그룹(마스터) 정보 조회
+			JobQueueGroup jobQueueGroup = getJobQueueGroupInfo(context.getJobDetail());
+			
+			if(null == jobQueueGroup) {
+				throw new Exception("No jobQueueGroup data"); //TODOJ 에러메시지 추후 다시 정리..
+			}else {
+				logger.debug(">>>>> jobQueueGroup : " + jobQueueGroup.toString());
+			}
+			
+			String batchJobName = jobQueueGroup.getBatchJobName();
+
+			// queueSaveFlag(큐 정보 저장) 여부가 false일 경우 (특정시간마다 한번씩만 수행되는 작업),
+			// 배치 작업 전 1건의 큐 정보를 미리 저장해둔다.
+			if ("N".equals(jobQueueGroup.getQueueSaveFlag())) {
+				JobQueueData jobQueueData = new JobQueueData();
+				jobQueueData.setJobGroup(jobQueueGroup.getJobGroup());
+				jobQueueData.setJobName(jobQueueGroup.getJobName());
+				jobQueueData.setQueueClass("test"); ////// ??? TODOJ 
+				jobQueueData.setProcessCode("WAITING");
+				jobQueueDataService.insert(jobQueueData);
+			}
+
+			// 작업 큐 그룹 정보를 통해 jobParameter 생성
+			JobParameters jobParameters = getJobParamFromJobQueueGroupInfo(jobQueueGroup);
+			logger.debug(">>>>> jobParameters : " + jobParameters);
+
+			System.out.println(jobLocator.getJob(batchJobName));
+
+			// 배치 작업 시작
+			jobLauncher.run(jobLocator.getJob(batchJobName), jobParameters);
+
+			
 		} catch (JobExecutionAlreadyRunningException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -87,70 +103,34 @@ public class QuartzJobLauncher implements Job {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
-	private JobParameters getJobParametersFromQueueGroupInfo(JobDetail jobDetail){
-		
+	
+	private JobQueueGroup getJobQueueGroupInfo(JobDetail jobDetail) {
 		String jobGroup = jobDetail.getKey().getGroup();
 		String jobName = jobDetail.getKey().getName();
 		
-		JobParametersBuilder builder = new JobParametersBuilder();
+		JobQueueGroup param = new JobQueueGroup(jobGroup,jobName);
+		return jobQueueGroupService.detail(param); // 큐 그룹(마스터) 정보 조회
+	}
+	
+	private JobParameters getJobParamFromJobQueueGroupInfo(JobQueueGroup info){
 		
-		JobQueueGroup paramInfo = new JobQueueGroup(jobGroup,jobName);
-		JobQueueGroup getInfo = jobQueueGroupService.detail(paramInfo); // 큐 그룹 정보 조회
+		JobParametersBuilder builder = new JobParametersBuilder();
 		
 		//need unique job parameter to rerun the same job
 		builder.addDate("runDate", new Date());
 		
-		builder.addString("jobGroup", getInfo.getJobGroup());
-		builder.addString("jobName", getInfo.getJobName());
-		builder.addString("batchJobName", getInfo.getBatchJobName()); //배치 작업 명
-		builder.addString("retryCount", String.valueOf(getInfo.getRetryCount())); //재시도 수  
-		builder.addString("threadCount", String.valueOf(getInfo.getThreadCount())); //스레드 수 
-		builder.addString("queueSaveFlag", String.valueOf(getInfo.getQueueSaveFlag())); //큐 정보 저장 여부
-		builder.addString("jobData", String.valueOf(getInfo.getJobData())); //개별 job마다 추가적으로 전달할 job (pram) 데이터
+		builder.addString("jobGroup", info.getJobGroup());
+		builder.addString("jobName", info.getJobName());
+		builder.addString("batchJobName", info.getBatchJobName()); //배치 작업 명
+		builder.addLong("retryCount", (long)info.getRetryCount()); //재시도 수  
+		builder.addLong("threadCount",(long)(info.getThreadCount())); //스레드 수 
+//		builder.addString("queueSaveFlag", String.valueOf(info.getQueueSaveFlag())); //큐 정보 저장 여부
+		builder.addString("jobData", String.valueOf(info.getJobData())); //개별 job마다 추가적으로 전달할 job (pram) 데이터
 		
 		return builder.toJobParameters();
 	}
-	
-	
-	
-//	//get params from jobDataAsMap property, job-quartz.xml
-//	private JobParameters getJobParametersFromJobMap(Map<String, Object> jobDataMap) {
-//
-//		JobParametersBuilder builder = new JobParametersBuilder();
-//
-//		for (Entry<String, Object> entry : jobDataMap.entrySet()) {
-//			String key = entry.getKey();
-//			Object value = entry.getValue();
-//			if (value instanceof String && !key.equals(JOB_NAME)) {
-//				builder.addString(key, (String) value);
-//			} else if (value instanceof Float || value instanceof Double) {
-//				builder.addDouble(key, ((Number) value).doubleValue());
-//			} else if (value instanceof Integer || value instanceof Long) {
-//				builder.addLong(key, ((Number) value).longValue());
-//			} else if (value instanceof Date) {
-//				builder.addDate(key, (Date) value);
-//			} else {
-//				// JobDataMap contains values which are not job parameters
-//				// (ignoring)
-//			}
-//		}
-//		//need unique job parameter to rerun the same job
-//		builder.addDate("runDate", new Date());
-//		
-//		//////// TEST ////////
-//		builder.addString("readQuery", "com.hiair.app.sample.test.service.SampleQueueMapper.select");
-//		
-//		String jobName = (String)jobDataMap.get(JOB_NAME); 
-//		logger.debug(">>>>>>>>>>>>> Job Name >>>>>>>>>>>>>" + jobName);
-//		builder.addString("jobName", jobName);
-//		if("DemandTicektJob".equals(jobName)) {
-//			builder.addString("writeQuery", "com.hiair.app.sample.test.service.SampleQueueMapper.update1");
-//		}else if("RefundTicektJob".equals(jobName)) {
-//			builder.addString("writeQuery", "com.hiair.app.sample.test.service.SampleQueueMapper.update2");
-//		}
-//		return builder.toJobParameters();
-//	}
+
 }
