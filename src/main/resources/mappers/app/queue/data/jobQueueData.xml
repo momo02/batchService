@@ -21,7 +21,7 @@
 	</resultMap>	
 	
 	
-	<select id="list2" parameterType="jobQueueData" resultMap="jobQueueDataMap">
+	<select id="list" parameterType="jobQueueData" resultMap="jobQueueDataMap">
 		SELECT
 				QUEUE_DATA_NO
 				,JOB_GROUP
@@ -55,7 +55,7 @@
   		  AND JOB_NAME = #{jobParameters['jobName']}
 	</select> -->
 	
-	<select id="list" resultMap="jobQueueDataMap">
+	<select id="listForReader" resultMap="jobQueueDataMap">
 		SELECT
 				QUEUE_DATA_NO
 				,JOB_GROUP
@@ -72,10 +72,23 @@
 		<![CDATA[ 
 		WHERE JOB_GROUP = #{jobGroup} 
   		  AND JOB_NAME = #{jobName}  
+  		  AND RECENT_PROCESS_CODE NOT IN ('SUCCESS','PROCESSING')
+  		  AND PROCESS_COUNT <= #{retryCount}
+  		ORDER BY QUEUE_DATA_NO
+  		LIMIT 0, #{_pagesize}  
+  		]]>
+		
+		<!-- <![CDATA[ 
+		WHERE JOB_GROUP = #{jobGroup} 
+  		  AND JOB_NAME = #{jobName}  
   		  AND RECENT_PROCESS_CODE <> 'SUCCESS'
   		  AND PROCESS_COUNT <= #{retryCount}
-  		LIMIT #{_skiprows}, #{_pagesize} 
-  		]]>
+  		ORDER BY QUEUE_DATA_NO
+  		LIMIT 0, #{_pagesize}  
+  		]]> -->
+  		<!-- 
+  		LIMIT 0, #{_pagesize} 
+  		LIMIT #{_skiprows}, #{_pagesize}  -->
 	</select>
 	
 	<select id="detail" resultMap="jobQueueDataMap">
@@ -117,17 +130,14 @@
 					)
 	</insert>
 	
-<!-- 	<update id="update">
+	<update id="update" parameterType="jobQueueData">
 		UPDATE QUEUE_DATA 
 		SET    
-		       PROCESS_COUNT = (PROCESS_COUNT + 1), 
-		       RECENT_PROCESS_DATE = CURRENT_TIMESTAMP, 
-		       RECENT_PROCESS_CODE = #{recentProcessCode}, 
-		       RECENT_RUN_SERVER_IP = #{recentRunServerIp}
+		       RECENT_PROCESS_CODE = #{processCode} 
 		WHERE  QUEUE_DATA_NO = #{queueDataNo}; 
-	</update> -->
+	</update>
 	
-	<update id="update" parameterType="jobQueueData">
+	<update id="updateForWriter" parameterType="jobQueueData">
 		UPDATE QUEUE_DATA 
 		SET
 			 <if test="processCount != null and processCount != ''">

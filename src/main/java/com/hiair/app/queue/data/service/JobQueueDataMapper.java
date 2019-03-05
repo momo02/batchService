@@ -9,12 +9,14 @@ import com.hiair.sys.annotation.Mapper;
 public interface JobQueueDataMapper {
 	
 	public List<JobQueueData> list(JobQueueData model);
-	public List<JobQueueData> list2(JobQueueData model);
-	
 	public JobQueueData detail(JobQueueData model);
 	
 	public int insert(JobQueueData model);
 	public int update(JobQueueData model);
 	public int delete(JobQueueData model);
 	public int deleteAll();
+	
+	// spring batch의 reader & writer 객체에 의해 사용
+	public List<JobQueueData> listForReader(JobQueueData model);
+	public int updateForWriter(JobQueueData model);
 }

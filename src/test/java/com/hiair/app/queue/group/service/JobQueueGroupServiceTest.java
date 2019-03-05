@@ -1,28 +1,21 @@
 package com.hiair.app.queue.group.service;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 import java.sql.SQLException;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hiair.app.queue.group.model.JobQueueGroup;
-import com.hiair.app.scheduler.QuartzJobLauncher;
-import com.hiair.cmm.util.CmmJsonUtils;
-
-import springfox.documentation.spring.web.json.Json;
+import com.hiair.app.queue.group.service.JobQueueGroupService;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

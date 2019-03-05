@@ -28,8 +28,8 @@ public class CmmJobConfig {
 	  
 	  private static final Logger logger = LoggerFactory.getLogger(CmmJobConfig.class);
 	  
-	  private static final String SELECT_QUEUE_DATA = "com.hiair.app.queue.data.service.JobQueueDataMapper.list";
-	  private static final String UPDATE_QUEUE_DATA = "com.hiair.app.queue.data.service.JobQueueDataMapper.update";
+	  private static final String SELECT_QUEUE_DATA = "com.hiair.app.queue.data.service.JobQueueDataMapper.listForReader";
+	  private static final String UPDATE_QUEUE_DATA = "com.hiair.app.queue.data.service.JobQueueDataMapper.updateForWriter";
 	  private static final String INSERT_QUEUE_HISTORY = "com.hiair.app.queue.history.service.JobQueueHistoryMapper.insert";
 	  
 	  @Autowired
@@ -66,7 +66,10 @@ public class CmmJobConfig {
 				 ,@Value("#{jobParameters['jobName']}") String jobName
 				 ,@Value("#{jobParameters['retryCount']}") String retryCount
 			  ) {
-		  MyBatisPagingItemReader<?> itemReader = new MyBatisPagingItemReader<Object>();
+//		  MyBatisPagingItemReader<?> itemReader = new MyBatisPagingItemReader<Object>();
+		  
+		  MyBatisPagingItemReader<?> itemReader = new JobQueueDataReader2();
+		  
 		  itemReader.setSqlSessionFactory((SqlSessionFactory) sqlSessionFactory);
 		  itemReader.setQueryId(SELECT_QUEUE_DATA);
 		  itemReader.setPageSize(10); // 한번에 조회할 Item의 양, Page 단위로 끊어서 조회

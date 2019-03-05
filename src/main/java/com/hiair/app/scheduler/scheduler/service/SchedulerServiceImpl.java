@@ -1,4 +1,4 @@
-package com.hiair.app.scheduler.service;
+package com.hiair.app.scheduler.scheduler.service;
 
 import java.util.Set;
 
@@ -24,7 +24,6 @@ public class SchedulerServiceImpl implements SchedulerService {
 
 	public SchedulerServiceImpl(SchedulerFactoryBean schedulerFactoryBean) {
 		scheduler = schedulerFactoryBean.getScheduler();
-		System.out.println(">>>>>" + scheduler);
 	}
 
 	/**

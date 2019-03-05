@@ -1,7 +1,9 @@
 package com.hiair.app.scheduler.calendar.web;
 
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hiair.app.scheduler.calendar.model.QrtzCalendar;
 import com.hiair.app.scheduler.calendar.service.CalendarService;
-import com.hiair.app.scheduler.util.SchedulerUtil;
+import com.hiair.app.scheduler.sys.util.SchedulerUtil;
 import com.hiair.cmm.model.RestResponse;
 
 import io.swagger.annotations.Api;
@@ -38,13 +40,16 @@ public class CalendarRestController {
 		
 		try {
 			List<QrtzCalendar> calendarList = calendarService.list();
-			restResponse.getItems().add(calendarList);
+			
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("calendar", calendarList);
+			
+			restResponse.getItems().add(map);
 			
 		} catch (SchedulerException e) {
 			e.printStackTrace();
 			restResponse.setErrorCode("-1");
 			restResponse.setErrorMessage(e.getMessage());
-
 			return new ResponseEntity<>(restResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
@@ -54,21 +59,32 @@ public class CalendarRestController {
 	
 	@ApiOperation(value = "캘린더 조회")
 	@ApiImplicitParams({
-		@ApiImplicitParam(name = "name", value = "캘린더 명", required = false, dataType = "string", paramType = "query"),
+		@ApiImplicitParam(name = "name", value = "캘린더 명", required = false, dataType = "string", paramType = "query")
 	})
 	@RequestMapping("/detail")
 	public ResponseEntity<RestResponse> detail(@RequestParam(name = "name") String name) {
 		RestResponse restResponse = new RestResponse();
 		
 		try {
-			QrtzCalendar qrtzCalendar = calendarService.detail(name);
-			restResponse.getItems().add(qrtzCalendar);
+			
+			if(SchedulerUtil.checkCalendarExists(name)) {
+				QrtzCalendar qrtzCalendar = calendarService.detail(name);
+
+				Map<String,Object> map = new HashMap<String,Object>();
+				map.put("calendar", qrtzCalendar);
+				
+				restResponse.getItems().add(map);
+				
+			} else {
+				restResponse.setErrorCode("-1");
+				restResponse.setErrorMessage("해당 캘린더가 존재하지 않습니다. 다시 검색해 주세요.");
+				return new ResponseEntity<>(restResponse, HttpStatus.BAD_REQUEST);
+			}
 			
 		} catch (SchedulerException e) {
 			e.printStackTrace();
 			restResponse.setErrorCode("-1");
 			restResponse.setErrorMessage(e.getMessage());
-			
 			return new ResponseEntity<>(restResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
@@ -96,13 +112,12 @@ public class CalendarRestController {
 			e.printStackTrace();
 			restResponse.setErrorCode("-1");
 			restResponse.setErrorMessage(e.getMessage());
-
 			return new ResponseEntity<>(restResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+			
 		} catch (SchedulerException e) {
 			e.printStackTrace();
 			restResponse.setErrorCode("-1");
 			restResponse.setErrorMessage(e.getMessage());
-
 			return new ResponseEntity<>(restResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
@@ -124,6 +139,7 @@ public class CalendarRestController {
 			} else {
 				restResponse.setErrorCode("-1");
 				restResponse.setErrorMessage("해당 캘린더가 존재 하지 않습니다. 다시 입력해주세요.");
+				return new ResponseEntity<>(restResponse, HttpStatus.BAD_REQUEST);
 			}
 
 
@@ -131,7 +147,6 @@ public class CalendarRestController {
 			e.printStackTrace();
 			restResponse.setErrorCode("-1");
 			restResponse.setErrorMessage(e.getMessage());
-
 			return new ResponseEntity<>(restResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<>(restResponse, HttpStatus.OK);
@@ -150,15 +165,21 @@ public class CalendarRestController {
 		
 		try {
 			if(SchedulerUtil.checkTriggerExists(triggerName, triggerGroup)) {
-				calendarService.addToTrigger(calendarName, triggerName, triggerGroup);
-				
+				if(SchedulerUtil.checkCalendarExists(calendarName)) {
+					calendarService.addToTrigger(calendarName, triggerName, triggerGroup);	
+				} else {
+					restResponse.setErrorCode("-1");
+					restResponse.setErrorMessage("해당 캘린더가 존재하지 않습니다. 다시 확인해 주세요.");
+					return new ResponseEntity<>(restResponse, HttpStatus.BAD_REQUEST);
+					
+				}
 			} else {
 				restResponse.setErrorCode("-1");
-				restResponse.setErrorMessage("트리거가 존재하지 않습니다. 다시 확인해 주세요");
+				restResponse.setErrorMessage("해당 트리거가 존재하지 않습니다. 다시 확인해 주세요.");
+				return new ResponseEntity<>(restResponse, HttpStatus.BAD_REQUEST);
 			}
 			
 		} catch (SchedulerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			restResponse.setErrorCode("-1");
 			restResponse.setErrorMessage(e.getMessage());
@@ -181,9 +202,11 @@ public class CalendarRestController {
 		try {
 			if(SchedulerUtil.checkTriggerExists(triggerName, triggerGroup)) {
 				calendarService.deleteFromTrigger(triggerName, triggerGroup);	
+				
 			} else {
 				restResponse.setErrorCode("-1");
 				restResponse.setErrorMessage("트리거가 존재하지 않습니다. 다시 확인해 주세요");
+				return new ResponseEntity<>(restResponse, HttpStatus.BAD_REQUEST);
 			}
 			
 		} catch (SchedulerException e) {

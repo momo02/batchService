@@ -4,12 +4,10 @@ import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.aop.ThrowsAdvice;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
 import com.hiair.app.queue.data.model.JobQueueData;
-import com.hiair.app.queue.group.service.JobQueueGroupServiceImpl;
 
 //ItemProcessor : ItemReader로부터 읽어들인 Item을 DB에 Write하기 전에 필요한 로직을 처리.
 //null을 반환하면 Writer에 전달되지 X

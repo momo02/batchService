@@ -58,6 +58,7 @@ public class QuartzJobLauncher implements Job {
 			
 			if(null == jobQueueGroup) {
 				throw new Exception("No jobQueueGroup data"); //TODOJ 에러메시지 추후 다시 정리..
+				// 다른 작업은 별개로 실행되어야함.. 
 			}else {
 				logger.debug(">>>>> jobQueueGroup : " + jobQueueGroup.toString());
 			}

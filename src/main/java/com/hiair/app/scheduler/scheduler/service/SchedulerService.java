@@ -1,4 +1,4 @@
-package com.hiair.app.scheduler.service;
+package com.hiair.app.scheduler.scheduler.service;
 
 import org.quartz.SchedulerException;
 

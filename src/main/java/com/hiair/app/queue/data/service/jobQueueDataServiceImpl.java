@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 import com.hiair.app.queue.data.model.JobQueueData;
 
 @Service
-public class jobQueueDataServiceImpl implements JobQueueDataService{
+public class JobQueueDataServiceImpl implements JobQueueDataService{
 	
-	private static final Logger logger = LoggerFactory.getLogger(jobQueueDataServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(JobQueueDataServiceImpl.class);
 	
 	@Autowired
 	private JobQueueDataMapper mapper;
@@ -40,4 +40,13 @@ public class jobQueueDataServiceImpl implements JobQueueDataService{
 	public int deleteAll() {
 		return mapper.deleteAll();
 	}
+	
+	public List<JobQueueData> listForReader(JobQueueData model) {
+		return mapper.listForReader(model);
+	}
+
+	public int updateForWriter(JobQueueData model) {
+		return mapper.updateForWriter(model);
+	}
+	
 }

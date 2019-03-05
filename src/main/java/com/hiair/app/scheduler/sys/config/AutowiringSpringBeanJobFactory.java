@@ -1,4 +1,4 @@
-package com.hiair.app.scheduler.config;
+package com.hiair.app.scheduler.sys.config;
 
 import org.quartz.spi.TriggerFiredBundle;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;

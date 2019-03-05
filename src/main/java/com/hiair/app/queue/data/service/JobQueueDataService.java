@@ -13,4 +13,8 @@ public interface JobQueueDataService {
 	public int update(JobQueueData model);
 	public int delete(JobQueueData model);
 	public int deleteAll(); 
+	
+	// spring batch의 reader & writer 객체에 의해 사용
+	public List<JobQueueData> listForReader(JobQueueData param);
+	public int updateForWriter(JobQueueData model);
 }

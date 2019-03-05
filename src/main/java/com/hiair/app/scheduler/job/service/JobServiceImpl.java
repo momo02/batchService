@@ -29,7 +29,6 @@ public class JobServiceImpl implements JobService {
 
 	public JobServiceImpl(SchedulerFactoryBean schedulerFactoryBean) {
 		scheduler = schedulerFactoryBean.getScheduler();
-		System.out.println(">>>>>" + scheduler);
 	}
 	
 	/**

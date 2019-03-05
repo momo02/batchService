@@ -85,7 +85,7 @@ public class JobQueueServiceTest {
 		//작업 큐 그룹 추가
 		jobQueueGroupService.insert(jobQueueGroup);
 		//작업 큐 정보 추가,, 동일데이터 1000건 
-		jobQueueDataInsertRows(10000);
+		jobQueueDataInsertRows(200);
 	}
 	
 	
@@ -115,18 +115,36 @@ public class JobQueueServiceTest {
 	 * 기존에 동일한 테스트 데이터 존재하면 삭제 (test insert 롤백없이 진행했을 경우)
 	 */
 	public void deleteExistingSameData() {
+		//STEP 1
+		//큐 히스토리 테이블에서 삭제
+		String sql_delQueueHistory = "DELETE FROM QUEUE_HISOTRY\r\n" + 
+				"WHERE QUEUE_DATA_NO IN ( \r\n" + 
+				"	SELECT QUEUE_DATA_NO FROM QUEUE_DATA \r\n" + 
+				"	WHERE JOB_NAME= ? AND JOB_GROUP= ? \r\n" + 
+				")\r\n";
+		this.jdbcTemplate.update(sql_delQueueHistory,TEST_JOB_GROUP,TEST_JOB_NAME);
 		
-		//큐 그룹 테이블에서 삭제 
-		String delQueueGroup = "DELETE FROM QUEUE_GROUP"
-							 + " WHERE JOB_GROUP = ? "
-							 + " AND JOB_NAME = ? ";
-		this.jdbcTemplate.update(delQueueGroup,TEST_JOB_GROUP,TEST_JOB_NAME);
+		//큐 히스토리 테이블 auto_increment 초기화 
+		String sql_initAutoIncrmntQueueHistory = "ALTER TABLE QUEUE_HISOTRY AUTO_INCREMENT = 0";  
+		this.jdbcTemplate.update(sql_initAutoIncrmntQueueHistory);
 		
+		//STEP 2
 		//큐 정보 테이블에서 삭제
-		String delQueueData = "DELETE FROM QUEUE_DATA"
+		String sql_delQueueData = "DELETE FROM QUEUE_DATA"
 							+ " WHERE JOB_GROUP = ? " 
 							+ " AND JOB_NAME = ? ";
-		this.jdbcTemplate.update(delQueueData,TEST_JOB_GROUP,TEST_JOB_NAME);
+		this.jdbcTemplate.update(sql_delQueueData,TEST_JOB_GROUP,TEST_JOB_NAME);
+		
+		//큐 정보 테이블 auto_increment 초기화 
+		String sql_initAutoIncrmntQueueData = "ALTER TABLE QUEUE_DATA AUTO_INCREMENT = 0";  
+		this.jdbcTemplate.update(sql_initAutoIncrmntQueueData);
+		
+		//STEP 3
+		//큐 그룹 테이블에서 삭제 
+		String sql_delQueueGroup = "DELETE FROM QUEUE_GROUP"
+							 + " WHERE JOB_GROUP = ? "
+							 + " AND JOB_NAME = ? ";
+		this.jdbcTemplate.update(sql_delQueueGroup,TEST_JOB_GROUP,TEST_JOB_NAME);
 	}
 	
 }

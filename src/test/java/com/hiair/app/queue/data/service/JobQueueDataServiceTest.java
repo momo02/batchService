@@ -1,25 +1,16 @@
 package com.hiair.app.queue.data.service;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hiair.app.queue.data.model.JobQueueData;
-import com.hiair.app.queue.group.model.JobQueueGroup;
-import com.hiair.cmm.util.CmmJsonUtils;
+import com.hiair.app.queue.data.service.JobQueueDataService;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

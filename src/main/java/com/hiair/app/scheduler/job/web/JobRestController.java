@@ -1,6 +1,8 @@
 package com.hiair.app.scheduler.job.web;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hiair.app.scheduler.job.model.QrtzJob;
 import com.hiair.app.scheduler.job.service.JobService;
-import com.hiair.app.scheduler.util.SchedulerUtil;
+import com.hiair.app.scheduler.sys.util.SchedulerUtil;
 import com.hiair.cmm.model.RestResponse;
 
 import io.swagger.annotations.Api;
@@ -36,7 +38,11 @@ public class JobRestController {
 		
 		try {
 			List<QrtzJob> jobList = jobService.list();
-			restResponse.getItems().add(jobList);
+			
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("job", jobList);
+			
+			restResponse.getItems().add(map);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -58,7 +64,11 @@ public class JobRestController {
 
 		try {
 			List<QrtzJob> jobList = jobService.listByGroup(jobGroup);
-			restResponse.getItems().add(jobList);
+			
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("job", jobList);
+			
+			restResponse.getItems().add(map);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -82,7 +92,13 @@ public class JobRestController {
 	public ResponseEntity<RestResponse> add(@RequestParam("jobName") String jobName, @RequestParam("jobGroup") String jobGroup, @RequestParam("description") String description) {
 		RestResponse restResponse = new RestResponse();
 		try {
-			jobService.add(jobName, jobGroup, description);
+			if(!SchedulerUtil.checkJobExists(jobName, jobGroup)) {
+				jobService.add(jobName, jobGroup, description);	
+			}else{
+				restResponse.setErrorCode("-1");
+				restResponse.setErrorMessage("해당 작업이 중복되었습니다. 다시 확인해 주세요.");
+				return new ResponseEntity<>(restResponse, HttpStatus.BAD_REQUEST);
+			}
 
 		} catch (SchedulerException e) {
 			e.printStackTrace();
@@ -114,6 +130,7 @@ public class JobRestController {
 			} else {
 				restResponse.setErrorCode("-1");
 				restResponse.setErrorMessage("해당 작업이 존재하지 않습니다. 다시 시도해주세요.");
+				return new ResponseEntity<>(restResponse, HttpStatus.BAD_REQUEST);
 			}
 			
 

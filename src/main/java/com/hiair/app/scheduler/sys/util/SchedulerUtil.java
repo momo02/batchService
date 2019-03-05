@@ -1,4 +1,4 @@
-package com.hiair.app.scheduler.util;
+package com.hiair.app.scheduler.sys.util;
 
 import org.quartz.JobKey;
 import org.quartz.Scheduler;

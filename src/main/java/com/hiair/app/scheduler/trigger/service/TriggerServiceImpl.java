@@ -32,7 +32,6 @@ public class TriggerServiceImpl implements TriggerService {
 	
 	public TriggerServiceImpl(SchedulerFactoryBean schedulerFactoryBean) {
 		scheduler = schedulerFactoryBean.getScheduler();
-		System.out.println(">>>>>" + scheduler);
 	}
 
 	/**

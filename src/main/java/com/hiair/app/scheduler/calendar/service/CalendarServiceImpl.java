@@ -31,7 +31,6 @@ public class CalendarServiceImpl implements CalendarService {
 
 	public CalendarServiceImpl(SchedulerFactoryBean schedulerFactoryBean) {
 		scheduler = schedulerFactoryBean.getScheduler();
-		System.out.println(">>>>>" + scheduler);
 	}
 	
 	public List<QrtzCalendar> list() throws SchedulerException {

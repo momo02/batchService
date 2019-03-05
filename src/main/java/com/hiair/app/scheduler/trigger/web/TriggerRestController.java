@@ -1,7 +1,9 @@
 package com.hiair.app.scheduler.trigger.web;
 
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.quartz.CronExpression;
 import org.quartz.SchedulerException;
@@ -14,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hiair.app.scheduler.sys.util.SchedulerUtil;
 import com.hiair.app.scheduler.trigger.model.QrtzTrigger;
 import com.hiair.app.scheduler.trigger.service.TriggerService;
-import com.hiair.app.scheduler.util.SchedulerUtil;
 import com.hiair.cmm.model.RestResponse;
 
 import io.swagger.annotations.Api;
@@ -44,7 +46,11 @@ public class TriggerRestController {
 
 		try {
 			List<QrtzTrigger> triggerList = triggerService.list(jobName, jobGroup);
-			restResponse.getItems().add(triggerList);
+			
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("trigger", triggerList);
+			
+			restResponse.getItems().add(map);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -68,11 +74,16 @@ public class TriggerRestController {
 		try {
 			if(SchedulerUtil.checkTriggerExists(triggerName, triggerGroup)) {
 				QrtzTrigger qrtzTrigger = triggerService.detail(triggerName, triggerGroup);
-				restResponse.getItems().add(qrtzTrigger);
+
+				Map<String,Object> map = new HashMap<String,Object>();
+				map.put("trigger", qrtzTrigger);
+
+				restResponse.getItems().add(map);
 				
 			} else {
 				restResponse.setErrorCode("-1");
 				restResponse.setErrorMessage("해당 트리거가 없습니다. 다시 검색해 주세요.");
+				return new ResponseEntity<>(restResponse, HttpStatus.BAD_REQUEST);
 			}
 			
 		} catch (SchedulerException e) {

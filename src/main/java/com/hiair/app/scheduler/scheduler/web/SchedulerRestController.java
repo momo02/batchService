@@ -1,4 +1,4 @@
-package com.hiair.app.scheduler.web;
+package com.hiair.app.scheduler.scheduler.web;
 
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hiair.app.scheduler.service.SchedulerService;
+import com.hiair.app.scheduler.scheduler.service.SchedulerService;
 import com.hiair.cmm.model.RestResponse;
 
 import io.swagger.annotations.Api;

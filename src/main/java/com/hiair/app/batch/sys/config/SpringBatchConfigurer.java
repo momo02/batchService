@@ -1,4 +1,4 @@
-package com.hiair.app.batch.config;
+package com.hiair.app.batch.sys.config;
 
 import javax.annotation.PostConstruct;
 

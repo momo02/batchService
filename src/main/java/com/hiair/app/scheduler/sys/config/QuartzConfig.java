@@ -1,4 +1,4 @@
-package com.hiair.app.scheduler.config;
+package com.hiair.app.scheduler.sys.config;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -15,6 +15,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hiair.app.queue.history.model.JobQueueHistory;
+import com.hiair.app.queue.history.service.JobQueueHistoryService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:config/spring/test-main-context.xml"})
