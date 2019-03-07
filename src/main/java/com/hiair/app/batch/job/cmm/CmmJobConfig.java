@@ -39,9 +39,10 @@ public class CmmJobConfig {
 	  @StepScope
 	  public TaskExecutor taskExecutor(@Value("#{jobParameters['threadCount']}") int threadCount) {
 		  
-		  System.err.println(">>>>>> threadCount : " + threadCount); 
+//		  System.err.println(">>>>>> threadCount : " + threadCount); 
+		  
 		  ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-		  taskExecutor.setCorePoolSize(threadCount);
+		  taskExecutor.setCorePoolSize(5);
 		  taskExecutor.setMaxPoolSize(Integer.MAX_VALUE); //TODOJ Max Thread Pool Size는 몇으로 할지..
 		  taskExecutor.afterPropertiesSet();
 		  return taskExecutor;
@@ -67,12 +68,12 @@ public class CmmJobConfig {
 				 ,@Value("#{jobParameters['retryCount']}") String retryCount
 			  ) {
 //		  MyBatisPagingItemReader<?> itemReader = new MyBatisPagingItemReader<Object>();
+//		  MyBatisPagingItemReader<?> itemReader = new JobQueueDataReader2();
+		  ItemReader<?> itemReader = new JobQueueDataReader();
 		  
-		  MyBatisPagingItemReader<?> itemReader = new JobQueueDataReader2();
-		  
-		  itemReader.setSqlSessionFactory((SqlSessionFactory) sqlSessionFactory);
-		  itemReader.setQueryId(SELECT_QUEUE_DATA);
-		  itemReader.setPageSize(10); // 한번에 조회할 Item의 양, Page 단위로 끊어서 조회
+//		  itemReader.setSqlSessionFactory((SqlSessionFactory) sqlSessionFactory);
+//		  itemReader.setQueryId(SELECT_QUEUE_DATA);
+//		  itemReader.setPageSize(10); // 한번에 조회할 Item의 양, Page 단위로 끊어서 조회
 		  //cf.PageSize가 10이고, ChunkSize가 50이라면 ItemReader에서 Page 조회가 5번 일어나면 1번 의 트랜잭션이 발생하여 Chunk가 처리
 		  //한번의 트랜잭션 처리를 위해 5번의 쿼리 조회가 발생하기 때문에 성능상 이슈가 발생할 수 있음.
 		  //Setting a fairly large page size and using a commit interval that matches the page size should provide better performance. 
@@ -87,7 +88,7 @@ public class CmmJobConfig {
 		  logger.debug(">>>>> jobName : " + jobName);
 		  logger.debug(">>>>> retryCount : " + retryCount);
 		  
-		  itemReader.setParameterValues(map);
+//		  itemReader.setParameterValues(map);
 		  
 		  return itemReader;
 	  }

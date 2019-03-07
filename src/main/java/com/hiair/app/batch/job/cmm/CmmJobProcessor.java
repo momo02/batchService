@@ -19,7 +19,7 @@ public class CmmJobProcessor implements ItemProcessor<JobQueueData, JobQueueData
 	@Override
 	public JobQueueData process(JobQueueData item) throws Exception {
 		
-		System.err.println(">>>>> param items (before) : " + item.toString());
+		logger.debug(">>>>> param items (before) : " + item.toString());
 		
 		
 		////// 각 서비스 처리 로직 ///////////
@@ -46,7 +46,7 @@ public class CmmJobProcessor implements ItemProcessor<JobQueueData, JobQueueData
 		//스레드 확인하기 위해서 임시로 스레드 정보 저장...
 		item.setProcessServerIp(Thread.currentThread().getName());
 		
-		System.err.println(">>>>> param items (after) : " + item.toString());
+		logger.debug(">>>>> param items (after) : " + item.toString());
 		return item;
 	}
 

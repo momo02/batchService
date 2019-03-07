@@ -15,7 +15,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 
-import com.hiair.app.batch.job.refundTicket.RefundTicektJobConfig;
+import com.hiair.app.batch.job.cmm.listener.ChunkExecutionListener;
+import com.hiair.app.batch.job.cmm.listener.JobCompletionNotificationListener;
+import com.hiair.app.batch.job.cmm.listener.StepExecutionNotificationListener;
 
 @Configuration
 @EnableBatchProcessing
@@ -27,8 +29,6 @@ public class CalendarShopJobConfig {
 		
 		private static final String STEP_NM = "CalendarShopJob_Step";
 		private static final String STEP_NM2 = "CalendarShopJob_Step2";
-		
-		
 		
 		@Autowired
 		private JobBuilderFactory jobBuilderFactory;
@@ -58,12 +58,40 @@ public class CalendarShopJobConfig {
 //			return new AttemptWriter();
 //		}
 		
+		
+//		@Bean
+//		public JobCompletionNotificationListener jobExecutionListener() {
+//			return new JobCompletionNotificationListener();
+//		}
+//		
+//		@Bean
+//		public StepExecutionNotificationListener stepExecutionListener() {
+//			return new StepExecutionNotificationListener();
+//		}
+		
+		@Bean
+		public ChunkExecutionListener chunkListener() {
+			return new ChunkExecutionListener();
+		}
+		
+		@Bean
+		public JobCompletionNotificationListener jobExecutionListener() {
+			return new JobCompletionNotificationListener();
+		}
+		
+		@Bean
+		public StepExecutionNotificationListener stepExecutionListener() {
+			return new StepExecutionNotificationListener();
+		}
+		
+		
 		@Bean(name = JOB_NM)
 		public Job sampleJob1() {
 			return jobBuilderFactory.get(JOB_NM)
 //					.start(step_main2())
 //					.next(step_main())
 					.start(step_main())
+					.listener(jobExecutionListener())
 					.build();
 		}
 	
@@ -75,8 +103,11 @@ public class CalendarShopJobConfig {
 					.reader(reader)
 					.processor((ItemProcessor<? super Object, ? extends Object>) processor)
 					.writer((ItemWriter<? super Object>) writer)
+					.listener(chunkListener())
+					.listener(stepExecutionListener())
 					.taskExecutor(taskExecutor)
-					.throttleLimit(5)  //maximium number of concurrent tasklet executions allowed
+					.throttleLimit(5)  // maximium number of concurrent tasklet executions allowed 
+									   // DEFAULT_THROTTLE_LIMIT = 4
 					.build();
 		}
 		

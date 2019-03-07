@@ -36,6 +36,9 @@
 		FROM QUEUE_DATA
 		WHERE JOB_GROUP = #{jobGroup}
   		  AND JOB_NAME = #{jobName}
+  		<![CDATA[   
+  		  AND RECENT_PROCESS_CODE <> 'SUCCESS'
+  		  ]]>
 	</select>
 	
 <!-- 	<select id="list_noPaging" parameterType="jobQueueData" resultMap="jobQueueDataMap">
@@ -72,20 +75,11 @@
 		<![CDATA[ 
 		WHERE JOB_GROUP = #{jobGroup} 
   		  AND JOB_NAME = #{jobName}  
-  		  AND RECENT_PROCESS_CODE NOT IN ('SUCCESS','PROCESSING')
-  		  AND PROCESS_COUNT <= #{retryCount}
-  		ORDER BY QUEUE_DATA_NO
-  		LIMIT 0, #{_pagesize}  
-  		]]>
-		
-		<!-- <![CDATA[ 
-		WHERE JOB_GROUP = #{jobGroup} 
-  		  AND JOB_NAME = #{jobName}  
   		  AND RECENT_PROCESS_CODE <> 'SUCCESS'
   		  AND PROCESS_COUNT <= #{retryCount}
   		ORDER BY QUEUE_DATA_NO
-  		LIMIT 0, #{_pagesize}  
-  		]]> -->
+  		LIMIT 0, #{_pagesize} 
+  		]]>
   		<!-- 
   		LIMIT 0, #{_pagesize} 
   		LIMIT #{_skiprows}, #{_pagesize}  -->
@@ -130,12 +124,15 @@
 					)
 	</insert>
 	
-	<update id="update" parameterType="jobQueueData">
+<!-- 	<update id="update">
 		UPDATE QUEUE_DATA 
 		SET    
-		       RECENT_PROCESS_CODE = #{processCode} 
+		       PROCESS_COUNT = (PROCESS_COUNT + 1), 
+		       RECENT_PROCESS_DATE = CURRENT_TIMESTAMP, 
+		       RECENT_PROCESS_CODE = #{recentProcessCode}, 
+		       RECENT_RUN_SERVER_IP = #{recentRunServerIp}
 		WHERE  QUEUE_DATA_NO = #{queueDataNo}; 
-	</update>
+	</update> -->
 	
 	<update id="updateForWriter" parameterType="jobQueueData">
 		UPDATE QUEUE_DATA 
