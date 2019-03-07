@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hiair.app.scheduler.calendar.model.QrtzCalendar;
 import com.hiair.app.scheduler.calendar.service.CalendarService;
 import com.hiair.app.scheduler.sys.util.SchedulerUtil;
+import com.hiair.app.scheduler.trigger.model.QrtzTrigger;
 import com.hiair.cmm.model.RestResponse;
 
 import io.swagger.annotations.Api;
@@ -44,7 +45,7 @@ public class CalendarRestController {
 			Map<String,Object> map = new HashMap<String,Object>();
 			map.put("calendar", calendarList);
 			
-			restResponse.getItems().add(map);
+			restResponse.setItems(map);
 			
 		} catch (SchedulerException e) {
 			e.printStackTrace();
@@ -59,21 +60,20 @@ public class CalendarRestController {
 	
 	@ApiOperation(value = "캘린더 조회")
 	@ApiImplicitParams({
-		@ApiImplicitParam(name = "name", value = "캘린더 명", required = false, dataType = "string", paramType = "query")
+		@ApiImplicitParam(name = "name", value = "캘린더 명", required = true, dataType = "string", paramType = "query")
 	})
 	@RequestMapping("/detail")
 	public ResponseEntity<RestResponse> detail(@RequestParam(name = "name") String name) {
 		RestResponse restResponse = new RestResponse();
 		
 		try {
-			
 			if(SchedulerUtil.checkCalendarExists(name)) {
 				QrtzCalendar qrtzCalendar = calendarService.detail(name);
 
 				Map<String,Object> map = new HashMap<String,Object>();
 				map.put("calendar", qrtzCalendar);
 				
-				restResponse.getItems().add(map);
+				restResponse.setItems(map);
 				
 			} else {
 				restResponse.setErrorCode("-1");
@@ -91,23 +91,18 @@ public class CalendarRestController {
 		return new ResponseEntity<>(restResponse, HttpStatus.OK);
 	}
 	
-	
-	
 	@ApiOperation(value = "캘린더 추가")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "cronExpression", value = "캘린더 크론표현식", required = false, dataType = "string", paramType = "query", defaultValue = "* * 0-23 ? * * *" ),
+		@ApiImplicitParam(name = "description", value = "캘린더 설명", required = false, dataType = "string", paramType = "query", defaultValue = "정기 점검")
+	})
 	@RequestMapping("/add")
-	public ResponseEntity<RestResponse> add(@RequestBody QrtzCalendar qrtzCalendar) {
+	public ResponseEntity<RestResponse> add(@RequestParam("cronExpression")String cronExpression, @RequestParam("description")String description) {
 		RestResponse restResponse = new RestResponse();
 		
 		try {
-			if(!SchedulerUtil.checkCalendarExists(qrtzCalendar.getCalendarName())) {
-				calendarService.add(qrtzCalendar);
+			calendarService.add(cronExpression, description);
 				
-			} else {
-				restResponse.setErrorCode("-1");
-				restResponse.setErrorMessage("동일한 캘린더명이 존재합니다. 다시 입력해주세요.");
-				return new ResponseEntity<>(restResponse, HttpStatus.BAD_REQUEST);
-			}
-			
 		} catch (ParseException e) {
 			e.printStackTrace();
 			restResponse.setErrorCode("-1");
@@ -142,7 +137,6 @@ public class CalendarRestController {
 				return new ResponseEntity<>(restResponse, HttpStatus.BAD_REQUEST);
 			}
 
-
 		} catch (SchedulerException e) {
 			e.printStackTrace();
 			restResponse.setErrorCode("-1");
@@ -152,30 +146,26 @@ public class CalendarRestController {
 		return new ResponseEntity<>(restResponse, HttpStatus.OK);
 	}
 	
-	@ApiOperation(value = "트리거에 캘린더 추가")
+	@ApiOperation(value = "캘린더 - 트리거 리스트")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "calendarName", value = "캘린더 명", required = true, dataType = "string", paramType = "query", defaultValue = "yjCalendar"),
-        @ApiImplicitParam(name = "triggerName", value = "트리거 명", required = true, dataType = "string", paramType = "query", defaultValue = "job1_Trigger"),
-        @ApiImplicitParam(name = "triggerGroup", value = "트리거 그룹", required = true, dataType = "string", paramType = "query", defaultValue = "IBE"),
 	})
-	@RequestMapping("/addToTrigger")
-	public ResponseEntity<RestResponse> addToTrigger(@RequestParam("calendarName") String calendarName,
-			@RequestParam("triggerName") String triggerName, @RequestParam("triggerGroup") String triggerGroup) {
+	@RequestMapping("/triggerList")
+	public ResponseEntity<RestResponse> triggerList(@RequestParam("calendarName") String calendarName) {
 		RestResponse restResponse = new RestResponse();
 		
 		try {
-			if(SchedulerUtil.checkTriggerExists(triggerName, triggerGroup)) {
-				if(SchedulerUtil.checkCalendarExists(calendarName)) {
-					calendarService.addToTrigger(calendarName, triggerName, triggerGroup);	
-				} else {
-					restResponse.setErrorCode("-1");
-					restResponse.setErrorMessage("해당 캘린더가 존재하지 않습니다. 다시 확인해 주세요.");
-					return new ResponseEntity<>(restResponse, HttpStatus.BAD_REQUEST);
-					
-				}
+			if(SchedulerUtil.checkCalendarExists(calendarName)) {
+				List<QrtzTrigger> qrtzTriggerList = calendarService.triggerList(calendarName);
+				
+				Map<String,Object> map = new HashMap<String,Object>();
+				map.put("trigger", qrtzTriggerList);
+				
+				restResponse.setItems(map);
+				
 			} else {
 				restResponse.setErrorCode("-1");
-				restResponse.setErrorMessage("해당 트리거가 존재하지 않습니다. 다시 확인해 주세요.");
+				restResponse.setErrorMessage("해당 캘린더가 존재 하지 않습니다. 다시 입력해주세요.");
 				return new ResponseEntity<>(restResponse, HttpStatus.BAD_REQUEST);
 			}
 			
@@ -183,30 +173,25 @@ public class CalendarRestController {
 			e.printStackTrace();
 			restResponse.setErrorCode("-1");
 			restResponse.setErrorMessage(e.getMessage());
-			
 			return new ResponseEntity<>(restResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
 		return new ResponseEntity<>(restResponse, HttpStatus.OK);
 	}
 	
-	@ApiOperation(value = "트리거의 캘린더 제거")
-	@ApiImplicitParams({
-		@ApiImplicitParam(name = "triggerName", value = "트리거 명", required = true, dataType = "string", paramType = "query", defaultValue = "job1_Trigger"),
-		@ApiImplicitParam(name = "triggerGroup", value = "트리거 그룹", required = true, dataType = "string", paramType = "query", defaultValue = "IBE"),
-	})
-	@RequestMapping("/deleteFromTrigger")
-	public ResponseEntity<RestResponse> deleteFromTrigger(@RequestParam("triggerName") String triggerName, @RequestParam("triggerGroup") String triggerGroup) {
+	
+	
+	@ApiOperation(value = "캘린더 - 트리거 업데이트")
+	@RequestMapping("/updateTriggerCalendar")
+	public ResponseEntity<RestResponse> updateTriggerCalendar(@RequestBody List<QrtzTrigger> qrtzTriggerList) {
 		RestResponse restResponse = new RestResponse();
 		
 		try {
-			if(SchedulerUtil.checkTriggerExists(triggerName, triggerGroup)) {
-				calendarService.deleteFromTrigger(triggerName, triggerGroup);	
-				
-			} else {
-				restResponse.setErrorCode("-1");
-				restResponse.setErrorMessage("트리거가 존재하지 않습니다. 다시 확인해 주세요");
-				return new ResponseEntity<>(restResponse, HttpStatus.BAD_REQUEST);
+			for (QrtzTrigger qrtzTrigger : qrtzTriggerList) {
+				if(qrtzTrigger.isTargetCalendar()) {
+					calendarService.addToTrigger(qrtzTrigger);	
+				} else {
+					calendarService.deleteFromTrigger(qrtzTrigger.getTriggerKey());
+				}
 			}
 			
 		} catch (SchedulerException e) {

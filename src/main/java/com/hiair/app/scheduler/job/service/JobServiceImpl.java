@@ -100,6 +100,7 @@ public class JobServiceImpl implements JobService {
 		logger.debug("::::::: JobClassName : " + jobDetail.getJobClass().getName());
 		logger.debug("::::::: JobGroup : " + jobDetail.getKey().getGroup());
 		logger.debug("::::::: JobName : " + jobDetail.getKey().getName());
+		logger.debug("::::::: Description : " + jobDetail.getDescription());
 		logger.debug("================================================");
 
 		// Add the the job to the scheduler's store
@@ -118,7 +119,6 @@ public class JobServiceImpl implements JobService {
 	 */
 	public void delete(String jobName, String jobGroup) throws SchedulerException {
 		JobKey jobKey = new JobKey(jobName, jobGroup);
-		scheduler.deleteJob(jobKey);
 		logger.debug("=================== deleteJob ===================");
 		logger.debug("::::: Job Key : " + jobKey);
 		logger.debug("::::: 연관 trigger list : ");
@@ -126,6 +126,8 @@ public class JobServiceImpl implements JobService {
 			logger.debug("=> " + trigger.getKey().toString());
 		}
 		logger.debug("================================================");
+		
+		scheduler.deleteJob(jobKey);
 	}
 
 	/**

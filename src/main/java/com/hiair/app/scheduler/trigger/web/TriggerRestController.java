@@ -34,32 +34,31 @@ public class TriggerRestController {
 	@Autowired
 	private TriggerService triggerService;
 	
-	
 	@ApiOperation(value = "특정 작업의 트리거 리스트 조회")
 	@ApiImplicitParams({
-        @ApiImplicitParam(name = "jobName", value = "작업 명", required = true, dataType = "string", paramType = "query", defaultValue = "job1"),
-        @ApiImplicitParam(name = "jobGroup", value = "작업 그룹", required = true, dataType = "string", paramType = "query", defaultValue = "IBE"),
+		@ApiImplicitParam(name = "jobName", value = "작업 명", required = true, dataType = "string", paramType = "query", defaultValue = "job1"),
+		@ApiImplicitParam(name = "jobGroup", value = "작업 그룹", required = true, dataType = "string", paramType = "query", defaultValue = "IBE"),
 	})
 	@RequestMapping("/list")
 	public ResponseEntity<RestResponse> list(@RequestParam("jobName") String jobName, @RequestParam("jobGroup") String jobGroup) {
 		RestResponse restResponse = new RestResponse();
-
+		
 		try {
 			List<QrtzTrigger> triggerList = triggerService.list(jobName, jobGroup);
 			
 			Map<String,Object> map = new HashMap<String,Object>();
 			map.put("trigger", triggerList);
 			
-			restResponse.getItems().add(map);
+			restResponse.setItems(map);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 			restResponse.setErrorCode("-1");
 			restResponse.setErrorMessage(e.getMessage());
-
+			
 			return new ResponseEntity<>(restResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
+		
 		return new ResponseEntity<>(restResponse, HttpStatus.OK);
 	}
 	
@@ -78,7 +77,7 @@ public class TriggerRestController {
 				Map<String,Object> map = new HashMap<String,Object>();
 				map.put("trigger", qrtzTrigger);
 
-				restResponse.getItems().add(map);
+				restResponse.setItems(map);
 				
 			} else {
 				restResponse.setErrorCode("-1");
@@ -109,6 +108,7 @@ public class TriggerRestController {
 			} else {
 				restResponse.setErrorCode("-1");
 				restResponse.setErrorMessage("크론 표현식이 잘못되었습니다.");
+				return new ResponseEntity<>(restResponse, HttpStatus.BAD_REQUEST);
 			}
 			
 		} catch (SchedulerException e) {
@@ -149,6 +149,7 @@ public class TriggerRestController {
 			} else {
 				restResponse.setErrorCode("-1");
 				restResponse.setErrorMessage("해당 트리거가 존재하지 않습니다.");
+				return new ResponseEntity<>(restResponse, HttpStatus.BAD_REQUEST);
 			}
 
 		} catch (SchedulerException e) {
@@ -175,6 +176,7 @@ public class TriggerRestController {
 			} else {
 				restResponse.setErrorCode("-1");
 				restResponse.setErrorMessage("해당 트리거가 존재하지 않습니다.");
+				return new ResponseEntity<>(restResponse, HttpStatus.BAD_REQUEST);
 			}
 			
 
@@ -202,6 +204,7 @@ public class TriggerRestController {
 			} else {
 				restResponse.setErrorCode("-1");
 				restResponse.setErrorMessage("해당 트리거가 존재하지 않습니다.");
+				return new ResponseEntity<>(restResponse, HttpStatus.BAD_REQUEST);
 			}
 			
 		} catch (SchedulerException e) {

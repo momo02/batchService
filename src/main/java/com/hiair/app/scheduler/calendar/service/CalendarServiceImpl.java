@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import com.hiair.app.scheduler.calendar.model.QrtzCalendar;
 import com.hiair.app.scheduler.trigger.model.QrtzTrigger;
+import com.hiair.cmm.util.CmmStringUtil;
 
 @Service
 public class CalendarServiceImpl implements CalendarService {
@@ -49,6 +50,30 @@ public class CalendarServiceImpl implements CalendarService {
 		return qrtzCalendar;
 	}
 	
+	public void add(String calendarCronExpression, String calendarDescription) throws ParseException, SchedulerException {
+			CronCalendar cronCalendar = new CronCalendar(calendarCronExpression);
+			cronCalendar.setDescription(calendarDescription);
+			cronCalendar.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
+
+			scheduler.addCalendar("EX_" + CmmStringUtil.getTimeStamp(), cronCalendar, true, true);
+	}
+
+	public void delete(String calendarName) throws SchedulerException {
+		Set<TriggerKey> triggerKeys = scheduler.getTriggerKeys(GroupMatcher.anyTriggerGroup()); 
+		
+		for (TriggerKey triggerKey : triggerKeys) {
+			Trigger trigger = scheduler.getTrigger(triggerKey);
+
+			if (null != trigger.getCalendarName()) {
+				if (trigger.getCalendarName().equals(calendarName)) {
+					deleteFromTrigger(triggerKey);
+				}
+			}
+		}
+		
+		scheduler.deleteCalendar(calendarName);
+	}
+	
 	public List<QrtzTrigger> triggerList(String calendarName) throws SchedulerException {
 		
 		Set<TriggerKey> triggerKey = scheduler.getTriggerKeys(GroupMatcher.anyTriggerGroup()); 
@@ -64,48 +89,20 @@ public class CalendarServiceImpl implements CalendarService {
 		
 		return triggerList;
 	}
-
-	public void add(QrtzCalendar qrtzCalendar) throws ParseException, SchedulerException {
-			CronCalendar cronCalendar = new CronCalendar(qrtzCalendar.getCalendarCronExpression());
-			cronCalendar.setDescription(qrtzCalendar.getCalendarDescription());
-			cronCalendar.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
-//			cronCalendar.setTimeZone(qrtzCalendar.getTIMEZONE());
-
-			scheduler.addCalendar(qrtzCalendar.getCalendarName(), cronCalendar, true, true);
-	}
-
-	public void delete(String calendarName) throws SchedulerException {
-		Set<TriggerKey> triggerKey = scheduler.getTriggerKeys(GroupMatcher.anyTriggerGroup()); 
+	
+	public void addToTrigger(QrtzTrigger qrtzTrigger) throws SchedulerException {
+		Trigger trigger = scheduler.getTrigger(qrtzTrigger.getTriggerKey());
+		Trigger newTrigger = trigger.getTriggerBuilder().modifiedByCalendar(qrtzTrigger.getCalendarName()).build();
 		
-		for (TriggerKey triggerKeys : triggerKey) {
-			Trigger trigger = scheduler.getTrigger(triggerKeys);
-
-			if (null != trigger.getCalendarName()) {
-				if (trigger.getCalendarName().equals(calendarName)) {
-					deleteFromTrigger(triggerKeys.getName(), triggerKeys.getGroup());
-				}
-			}
-		}
-		
-		scheduler.deleteCalendar(calendarName);
+		scheduler.rescheduleJob(qrtzTrigger.getTriggerKey(), newTrigger);
 	}
 	
-	public void addToTrigger(String calendarName, String triggerName, String triggerGroup) throws SchedulerException {
-		TriggerKey triggerKey = new TriggerKey(triggerName, triggerGroup);
-		Trigger trigger = scheduler.getTrigger(triggerKey);
-		Trigger newTrigger = trigger.getTriggerBuilder().modifiedByCalendar(calendarName).build();
-		
-		scheduler.rescheduleJob(triggerKey, newTrigger);
-	}
-	
-	public void deleteFromTrigger(String triggerName, String triggerGroup) throws SchedulerException {
-		TriggerKey triggerKey = new TriggerKey(triggerName, triggerGroup);
+	public void deleteFromTrigger(TriggerKey triggerKey) throws SchedulerException {
 		Trigger trigger = scheduler.getTrigger(triggerKey);
 		Trigger newTrigger = trigger.getTriggerBuilder().modifiedByCalendar(null).build();
 		
 		scheduler.rescheduleJob(triggerKey, newTrigger);
 	}
-
 
 	public QrtzCalendar calendarToCalendarModel(String calendarName, CronCalendar qrtzCalendar) throws SchedulerException {
 		QrtzCalendar calendar = new QrtzCalendar();
@@ -140,6 +137,7 @@ public class CalendarServiceImpl implements CalendarService {
 		qrtzTrigger.setNextFireTime(cronTrigger.getNextFireTime());
 		qrtzTrigger.setPrevFireTime(cronTrigger.getPreviousFireTime());
 		qrtzTrigger.setMisfireInstr(Integer.toString(cronTrigger.getMisfireInstruction()));
+		qrtzTrigger.setCalendarName(targetCalendarName);
 		
 		logger.debug("==============================================");
 		logger.debug(">>>>> [ " + cronTrigger.getKey() + " ] <<<<<");
@@ -151,17 +149,10 @@ public class CalendarServiceImpl implements CalendarService {
 		logger.debug("::::: End Time: " + cronTrigger.getEndTime());
 		logger.debug("::::: PreviousFireTime : " + cronTrigger.getPreviousFireTime());
 		logger.debug("::::: NextFireTime : " + cronTrigger.getNextFireTime());
-		
-		String calendarName = cronTrigger.getCalendarName();
-		
-		if(null != calendarName){
-			qrtzTrigger.setCalendarName(calendarName);
-			logger.debug("::::: CalendarName : " + cronTrigger.getCalendarName());
-			
-			if (calendarName.equals(targetCalendarName)) qrtzTrigger.setTargetCalendar(true);
-			logger.debug("::::: isTargetCalendar : " + qrtzTrigger.isTargetCalendar());
+		if(null != cronTrigger.getCalendarName()){
+			if (cronTrigger.getCalendarName().equals(targetCalendarName)) qrtzTrigger.setTargetCalendar(true);
 		}
-		
+		logger.debug("::::: isTargetCalendar : " + qrtzTrigger.isTargetCalendar());
 		logger.debug("==============================================");
 		
 		return qrtzTrigger;

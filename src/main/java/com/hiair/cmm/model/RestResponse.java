@@ -1,8 +1,7 @@
 package com.hiair.cmm.model;
 
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -22,8 +21,8 @@ public class RestResponse {
 	@ApiModelProperty(notes = "1이상은 정상, 음수 부터 비정상", required = true)
 	private String errorCode;
 	
-	@ApiModelProperty(notes = "아이템 단건 = .getItems().add() , 여러건 = setItems() 사용", required = true)
-	private List<Object> items;
+	@ApiModelProperty(notes = "아이템", required = false)
+	private Map<String,Object> items;
 	
 	@ApiModelProperty(notes = "처리 개수", required = false)
 	private int proCnt;
@@ -52,19 +51,18 @@ public class RestResponse {
 	public void setErrorCode(String errorCode) {
 		this.errorCode = errorCode;
 	}
-	public List<Object> getItems() {
-		if (items == null)
-			items = new LinkedList<Object>();
-		return items;
-	}
-	public void setItems(List<Object> items) {
-		this.items = items;
-	}
 	public int getProCnt() {
 		return proCnt;
 	}
 	public void setProCnt(int proCnt) {
 		this.proCnt = proCnt;
 	}
+	public Map<String, Object> getItems() {
+		return items;
+	}
+	public void setItems(Map<String, Object> items) {
+		this.items = items;
+	}
+	
 	
 }

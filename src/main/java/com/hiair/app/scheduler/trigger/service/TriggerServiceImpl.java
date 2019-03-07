@@ -147,8 +147,8 @@ public class TriggerServiceImpl implements TriggerService {
 				.withSchedule(sceduleBuilder) // 계속 반복
 				.endAt(qrtzTrigger.getEndTime())
 				.withDescription(qrtzTrigger.getDescription())
-				.withPriority(qrtzTrigger.getPriority());
-//				.modifiedByCalendar(null); //예외 처리 캘린더
+				.withPriority(qrtzTrigger.getPriority())
+				.modifiedByCalendar(qrtzTrigger.getCalendarName()); //예외 처리 캘린더
 
 		if ((null != qrtzTrigger.getJobGroup()) && (null != qrtzTrigger.getJobName())) {
 			triggerBuilder.forJob(qrtzTrigger.getJobName(), qrtzTrigger.getJobGroup());

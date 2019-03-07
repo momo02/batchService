@@ -42,7 +42,7 @@ public class JobRestController {
 			Map<String,Object> map = new HashMap<String,Object>();
 			map.put("job", jobList);
 			
-			restResponse.getItems().add(map);
+			restResponse.setItems(map);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -68,7 +68,7 @@ public class JobRestController {
 			Map<String,Object> map = new HashMap<String,Object>();
 			map.put("job", jobList);
 			
-			restResponse.getItems().add(map);
+			restResponse.setItems(map);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -94,6 +94,7 @@ public class JobRestController {
 		try {
 			if(!SchedulerUtil.checkJobExists(jobName, jobGroup)) {
 				jobService.add(jobName, jobGroup, description);	
+				
 			}else{
 				restResponse.setErrorCode("-1");
 				restResponse.setErrorMessage("해당 작업이 중복되었습니다. 다시 확인해 주세요.");
@@ -173,7 +174,6 @@ public class JobRestController {
 			jobService.pause(jobName, jobGroup);
 
 		} catch (SchedulerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			restResponse.setErrorCode("-1");
 			restResponse.setErrorMessage(e.getMessage());
@@ -195,7 +195,6 @@ public class JobRestController {
 			jobService.resume(jobName, jobGroup);
 
 		} catch (SchedulerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			restResponse.setErrorCode("-1");
 			restResponse.setErrorMessage(e.getMessage());
